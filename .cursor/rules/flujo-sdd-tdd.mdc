@@ -1,0 +1,14 @@
+---
+description: Orden de trabajo SDD y TDD, y límites de la arquitectura hexagonal
+alwaysApply: true
+---
+
+# Flujo de Cursada
+
+Antes de implementar una historia, la spec está en `docs/sdd/` y el test correspondiente falla. El código de dominio vive en `packages/core` y depende de puertos. Fastify, Next.js, Drizzle, el parser y el Vercel AI SDK no contienen reglas de negocio y `packages/core` no los importa.
+
+No saltear la spec. No escribir una regla sin un test que haya fallado antes. No mezclar el corpus de dos usuarios. No llamar al modelo cuando el caso de uso se abstiene.
+
+El monorepo usa npm. Las decisiones de stack están en `docs/adr/`; un cambio se registra con otro ADR.
+
+Los commits de una historia van en la rama `feat/HU-XXX-descripcion` y se separan en `test(#N): red`, `feat(#N): green` y `refactor(#N)`. Al cerrar un AC, un test o un PR, actualizar `docs/traceability.md`.

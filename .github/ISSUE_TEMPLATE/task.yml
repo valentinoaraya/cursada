@@ -1,0 +1,17 @@
+name: Tarea de infraestructura
+description: TASK-XXX. No lleva spec ni BDD
+title: "TASK-XXX: "
+labels: []
+body:
+  - type: textarea
+    id: objetivo
+    attributes:
+      label: Objetivo
+    validations:
+      required: true
+  - type: textarea
+    id: hecho
+    attributes:
+      label: Definición de hecho
+    validations:
+      required: true

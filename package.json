@@ -1,0 +1,18 @@
+{
+  "name": "cursada",
+  "private": true,
+  "engines": {
+    "node": ">=24"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "packages/adapters/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev -w @cursada/api",
+    "dev:web": "npm run dev -w @cursada/web",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  }
+}

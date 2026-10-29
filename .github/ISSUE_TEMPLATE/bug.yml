@@ -1,0 +1,24 @@
+name: Bug
+description: Empieza con un test que reproduce el error
+title: "BUG-XXX: "
+labels: []
+body:
+  - type: textarea
+    id: repro
+    attributes:
+      label: Qué pasa
+    validations:
+      required: true
+  - type: textarea
+    id: esperado
+    attributes:
+      label: Qué debería pasar
+    validations:
+      required: true
+  - type: checkboxes
+    id: test
+    attributes:
+      label: Test
+      options:
+        - label: Hay un test que reproduce el error antes del arreglo
+          required: true
