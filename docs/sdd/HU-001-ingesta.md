@@ -67,7 +67,7 @@ El autor carga un PDF o un Markdown asociado a una materia y una unidad. El sist
 
 | Pieza | Ruta | Estado |
 |---|---|---|
-| Feature | `features/HU-001-ingesta.feature` | Pendiente. Se escribe cuando el caso de uso esté en verde |
+| Feature | `features/HU-001-ingesta.feature` | Escrito. Cucumber pendiente |
 | Tests | `packages/core/src/ingestion/ingest-document.test.ts` | Verde. Cubre `AC-001-01` a `AC-001-05` con fakes |
 | Código | `packages/core/src/ingestion/ingest-document.ts` | Cubre `AC-001-01` a `AC-001-05` |
 | Issue | [#3](https://github.com/valentinoaraya/cursada/issues/3) | Abierta |
