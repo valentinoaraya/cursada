@@ -12,3 +12,5 @@ No saltear la spec. No escribir una regla sin un test que haya fallado antes. No
 El monorepo usa npm. Las decisiones de stack están en `docs/adr/`; un cambio se registra con otro ADR.
 
 Los commits de una historia van en la rama `feat/HU-XXX-descripcion` y se separan en `test(#N): red`, `feat(#N): green` y `refactor(#N)`. Al cerrar un AC, un test o un PR, actualizar `docs/traceability.md`.
+
+Cada issue nueva se agrega al proyecto de GitHub **Cursada Scrumban** (`gh project item-add 5 --owner valentinoaraya --url <url>`). No alcanza con crearla en el repositorio.

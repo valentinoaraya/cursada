@@ -8,6 +8,11 @@ Reglas para quien escribe código en este repositorio, persona o agente.
 2. Escribir el test en rojo. Recién después, el código que lo pone verde.
 3. Una historia de usuario no se da por terminada con reglas dentro de `apps/api` o `apps/web`.
 4. Actualizar `docs/traceability.md` cuando aparezca o cambie un AC, un test o un PR.
+5. Al crear una issue en GitHub, agregarla al proyecto **Cursada Scrumban** de `valentinoaraya`. Crearla solo en el repo no la muestra en el tablero.
+
+```bash
+gh project item-add 5 --owner valentinoaraya --url <url-de-la-issue>
+```
 
 ## Prohibiciones
 
@@ -27,3 +32,7 @@ Los tests de dominio usan fakes deterministas. Postgres entra solo en la suite d
 ## Decisiones ya tomadas
 
 Están en `docs/adr/`. Si una decisión cambia, se escribe otro ADR. No se reabre en un comentario.
+
+## Skills manuales
+
+En `.cursor/skills/` están `/backlog`, `/story` y `/pair`. Solo corren cuando se las nombra. No reemplazan este archivo: la spec sigue antes que el test, y el test rojo antes que el código.

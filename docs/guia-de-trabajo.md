@@ -6,6 +6,8 @@ Cursada se construye con spec-driven development y TDD. La spec se escribe antes
 
 **HU (issue) → SDD → criterios AC → BDD (Gherkin) → tests → código → PR**
 
+La issue, al crearse, entra al proyecto de GitHub **Cursada Scrumban**: `gh project item-add 5 --owner valentinoaraya --url <url>`. Si no, no aparece en el tablero.
+
 ## Tipos de trabajo
 
 | Tipo | Cuándo | Spec y BDD |
