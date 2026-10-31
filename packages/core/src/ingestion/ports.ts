@@ -14,5 +14,8 @@ export interface ChunkStore {
     materia: string,
     hash: string,
   ): Promise<{ documentId: string } | null>;
-  save(chunks: NewChunk[]): Promise<void>;
+  save(
+    document: { documentId: string; userId: string; materia: string; hash: string },
+    chunks: NewChunk[],
+  ): Promise<void>;
 }
