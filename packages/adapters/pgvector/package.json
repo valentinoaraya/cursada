@@ -7,9 +7,18 @@
     ".": "./src/index.ts"
   },
   "scripts": {
+    "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "@cursada/core": "*",
+    "drizzle-orm": "^0.45.2",
+    "postgres": "^3.4.9"
+  },
   "devDependencies": {
-    "typescript": "^7.0.2"
+    "@testcontainers/postgresql": "^12.2.0",
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
   }
 }
