@@ -2,7 +2,7 @@
 
 | HU | Issue | SDD | AC | BDD | Tests | Código | PR |
 |---|---|---|---|---|---|---|---|
-| HU-001 | [#3](https://github.com/valentinoaraya/cursada/issues/3) | [docs/sdd/HU-001-ingesta.md](sdd/HU-001-ingesta.md) | AC-001-01 a AC-001-05 en verde, con fakes | [features/HU-001-ingesta.feature](../features/HU-001-ingesta.feature) escrito. Cucumber pendiente | `packages/core/…/ingest-document.test.ts`; parser: lista en verde (PDF, MD, ilegible) | `IngestDocument` + `LocalDocumentParser` (unpdf + MD) | — |
+| HU-001 | [#3](https://github.com/valentinoaraya/cursada/issues/3) | [docs/sdd/HU-001-ingesta.md](sdd/HU-001-ingesta.md) | AC-001-01 a AC-001-05 en verde, con fakes | [features/HU-001-ingesta.feature](../features/HU-001-ingesta.feature) escrito. Cucumber pendiente | `packages/core/…/ingest-document.test.ts`; parser en verde; embeddings: lista en verde (orden, vacío, fallo; sin API) | `IngestDocument` + parser + `AiSdkEmbeddingProvider` | — |
 | HU-002 | [#4](https://github.com/valentinoaraya/cursada/issues/4) | Pendiente de /story | Sin escribir | — | — | — | — |
 | HU-003 | [#5](https://github.com/valentinoaraya/cursada/issues/5) | Pendiente de /story | Sin escribir | — | — | — | — |
 | HU-004 | [#6](https://github.com/valentinoaraya/cursada/issues/6) | Pendiente de /story | Sin escribir | — | — | — | — |
