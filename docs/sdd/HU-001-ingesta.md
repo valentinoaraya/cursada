@@ -71,4 +71,4 @@ El autor carga un PDF o un Markdown asociado a una materia y una unidad. El sist
 | Tests | `packages/core/src/ingestion/ingest-document.test.ts` | Verde. Cubre `AC-001-01` a `AC-001-05` con fakes |
 | Código | `packages/core/src/ingestion/ingest-document.ts` | Cubre `AC-001-01` a `AC-001-05` |
 | Issue | [#3](https://github.com/valentinoaraya/cursada/issues/3) | Abierta |
-| PR | — | Pendiente |
+| PR | [#12](https://github.com/valentinoaraya/cursada/pull/12) | Abierto |
