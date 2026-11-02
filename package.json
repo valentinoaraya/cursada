@@ -1,6 +1,7 @@
 {
   "name": "cursada",
   "private": true,
+  "type": "module",
   "engines": {
     "node": ">=24"
   },
@@ -13,6 +14,12 @@
     "dev:api": "npm run dev -w @cursada/api",
     "dev:web": "npm run dev -w @cursada/web",
     "test": "npm run test --workspaces --if-present",
+    "test:bdd": "cucumber-js",
     "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^12.7.0",
+    "@cursada/core": "*",
+    "tsx": "^4.23.15"
   }
 }
