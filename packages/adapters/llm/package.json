@@ -11,7 +11,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@cursada/core": "*"
+    "@ai-sdk/openai": "^4.0.106",
+    "@cursada/core": "*",
+    "ai": "^7.0.159"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
