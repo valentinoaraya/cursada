@@ -4,6 +4,8 @@ import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { integer, pgTable, text, unique, vector } from "drizzle-orm/pg-core";
 import postgres, { type Sql } from "postgres";
 
+const embeddingDimensions = 768;
+
 export const documents = pgTable(
   "documents",
   {
@@ -26,7 +28,7 @@ export const chunks = pgTable("chunks", {
   pagina: integer("pagina").notNull(),
   hash: text("hash").notNull(),
   text: text("text").notNull(),
-  embedding: vector("embedding", { dimensions: 1536 }).notNull(),
+  embedding: vector("embedding", { dimensions: embeddingDimensions }).notNull(),
 });
 
 export class PgVectorChunkStore implements ChunkStore {
@@ -48,7 +50,20 @@ export class PgVectorChunkStore implements ChunkStore {
         CONSTRAINT documents_user_materia_hash UNIQUE (user_id, materia, hash)
       )
     `);
-    await db.execute(sql`
+    const columns = await client<{ col_type: string }[]>`
+      SELECT format_type(a.atttypid, a.atttypmod) AS col_type
+      FROM pg_attribute a
+      JOIN pg_class c ON c.oid = a.attrelid
+      WHERE c.relname = 'chunks'
+        AND a.attname = 'embedding'
+        AND a.attnum > 0
+        AND NOT a.attisdropped
+    `;
+    if (columns[0] && columns[0].col_type !== `vector(${embeddingDimensions})`) {
+      await client`DROP TABLE chunks`;
+    }
+    await db.execute(
+      sql.raw(`
       CREATE TABLE IF NOT EXISTS chunks (
         id text PRIMARY KEY,
         document_id text NOT NULL REFERENCES documents(document_id),
@@ -58,9 +73,10 @@ export class PgVectorChunkStore implements ChunkStore {
         pagina integer NOT NULL,
         hash text NOT NULL,
         text text NOT NULL,
-        embedding vector(1536) NOT NULL
+        embedding vector(${embeddingDimensions}) NOT NULL
       )
-    `);
+    `),
+    );
     return new PgVectorChunkStore(db, client);
   }
 

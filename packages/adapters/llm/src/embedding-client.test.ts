@@ -1,6 +1,6 @@
 import { MockEmbeddingModelV4 } from "ai/test";
 import { describe, expect, it } from "vitest";
-import { createOpenAiEmbeddingClient } from "./embedding-client.js";
+import { createOllamaEmbeddingClient, createOpenAiEmbeddingClient } from "./embedding-client.js";
 
 const vector = [0.1, 0.2, 0.3];
 
@@ -24,5 +24,14 @@ describe("createOpenAiEmbeddingClient", () => {
 		const modelId = typeof client.model === "string" ? client.model : client.model.modelId;
 
 		expect(modelId).toBe("text-embedding-3-small");
+	});
+});
+
+describe("createOllamaEmbeddingClient", () => {
+	it("sin modelo usa nomic-embed-text", () => {
+		const client = createOllamaEmbeddingClient();
+		const modelId = typeof client.model === "string" ? client.model : client.model.modelId;
+
+		expect(modelId).toBe("nomic-embed-text");
 	});
 });
