@@ -6,7 +6,7 @@ import {
   FailingEmbeddings,
   FailingParser,
   type IngestWorld,
-} from "./world.ts";
+} from "./world.js";
 
 Given("que cargué un documento en una materia", async function (this: IngestWorld) {
   this.parser = new FakeParser([{ pagina: 1, text: "El sistema es un conjunto de elementos." }]);

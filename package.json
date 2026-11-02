@@ -15,11 +15,12 @@
     "dev:web": "npm run dev -w @cursada/web",
     "test": "npm run test --workspaces --if-present",
     "test:bdd": "cucumber-js",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "typecheck": "npm run typecheck --workspaces --if-present && tsc --noEmit -p features/tsconfig.json"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^12.7.0",
     "@cursada/core": "*",
+    "@types/node": "^26.6.6",
     "tsx": "^4.23.15"
   }
 }
