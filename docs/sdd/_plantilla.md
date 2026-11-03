@@ -1,6 +1,8 @@
 # HU-XXX — Título
 
-Se escribe antes de los tests. Completar todas las secciones. Borrar esta guía al copiar la plantilla.
+Esta plantilla es para un cambio grande. Un cambio chico no la usa.
+
+Se acepta antes de los tests. Completar todas las secciones. Borrar esta guía al copiar la plantilla.
 
 ## Objetivo
 
@@ -39,6 +41,7 @@ Qué pasa si un puerto falla. Qué queda persistido y qué no.
 
 | Pieza | Ruta | Estado |
 |---|---|---|
+| Seguimiento | `odd/tasks/<feature>.md` | |
 | Feature | `features/HU-XXX-*.feature` | |
 | Tests | | |
 | Código | | |

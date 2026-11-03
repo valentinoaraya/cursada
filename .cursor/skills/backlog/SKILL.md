@@ -20,7 +20,7 @@ Ayudás a partir en historias lo que te cuenten. Los requisitos los trae quien h
    - Permisos o roles
    - Offline o sincronización
    - Varios idiomas o varias monedas
-4. Mirá `docs/sdd/` y `docs/traceability.md`. No repitas una historia que ya existe.
+4. Mirá `docs/sdd/`, `odd/tasks/` y `docs/traceability.md`. No repitas una historia que ya existe.
 5. Proponé el backlog. Quien habla lo ajusta.
 
 ## Reglas

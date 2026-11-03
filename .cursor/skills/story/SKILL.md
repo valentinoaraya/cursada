@@ -2,8 +2,9 @@
 name: story
 description: >-
   Toma UNA historia, propone 2 o 3 criterios de aceptación y un plan corto, y
-  espera aprobación. Con el sí, escribe la spec en docs/sdd. No escribe código:
-  eso es /pair. Usar solo cuando se nombra /story.
+  espera aprobación. Si la historia es grande, con el sí escribe la spec en
+  docs/sdd y el seguimiento en odd/tasks. No escribe código: eso es /pair.
+  Usar solo cuando se nombra /story.
 disable-model-invocation: true
 ---
 
@@ -13,11 +14,14 @@ Se afina una sola historia, justo antes de construirla. Vos proponés. Quien hab
 
 ## Pasos
 
-1. **Leé la historia** que te pasen (texto, issue de GitHub, ticket) y el código actual, `AGENTS.md`, `docs/adr/` y `docs/sdd/`. Si ya hay spec para esa historia, partí de esa spec. No la cambies en silencio.
+1. **Leé la historia** que te pasen (texto, issue de GitHub, ticket) y el código actual, `AGENTS.md`, `docs/adr/`, `docs/sdd/` y `odd/tasks/`. Si ya hay spec para esa historia, partí de esa spec. No la cambies en silencio.
 2. **Criterios.** Proponé 2 o 3 en Given/When/Then. Describen qué ve o qué obtiene la persona, nunca cómo está implementado. Numeralos `AC-XXX-NN`, con el número de la HU. Si la HU todavía no tiene número, usá el siguiente libre en `docs/sdd/` y `docs/traceability.md`.
 3. **Si hacen falta más de 3 criterios, no la infles: proponé partirla.** Las historias nuevas salen en formato de backlog (`Como…, quiero…, para…`) para agregar al tracker. Se sigue con la primera.
 4. **Plan mínimo.** 5 viñetas como máximo. Sin código y sin nombres de archivo. Cómo atraviesa las capas, con lo mínimo que cumple los criterios. En este repo las reglas viven en `packages/core`; HTTP y React no son el lugar de una regla.
-5. **Esperá el sí.** Se ajusta hasta que digan que sí. Recién ahí escribí `docs/sdd/HU-XXX-….md` con `docs/sdd/_plantilla.md` y una fila en `docs/traceability.md` (issue y PR en blanco si no existen). No abras el issue de GitHub salvo que te lo pidan. Si la abrís, agregala al proyecto **Cursada Scrumban** (`gh project item-add 5 --owner valentinoaraya --url <url>`). No escribas tests ni código.
+5. **Esperá el sí.** Se ajusta hasta que digan que sí. Clasificá el tamaño con quien habla. Es grande cuando no se puede retomar solo con el pedido y el `git diff`, o cuando la HU tiene varias reglas.
+   - Grande: escribí `docs/sdd/HU-XXX-….md` con `docs/sdd/_plantilla.md` y `odd/tasks/<feature>.md` con `odd/tasks/_plantilla.md`. `## Specs` cita los AC aceptados. Sumá la fila en `docs/traceability.md` (issue y PR en blanco si no existen).
+   - Chico: el bloque de esta conversación alcanza. No escribas spec ni seguimiento.
+   No abras el issue de GitHub salvo que te lo pidan. Si la abrís, agregala al proyecto **Cursada Scrumban** (`gh project item-add 5 --owner valentinoaraya --url <url>`). No escribas tests ni código.
 
 ## Reglas
 

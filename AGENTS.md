@@ -4,7 +4,7 @@ Reglas para quien escribe código en este repositorio, persona o agente.
 
 ## Orden
 
-1. Leer la spec en `docs/sdd/` antes de tocar un caso de uso. Si no existe, se escribe con `docs/sdd/_plantilla.md` y se acepta antes de los tests.
+1. Clasificar el cambio. Es grande cuando no se puede retomar solo con el pedido y el `git diff`. Una HU con varias reglas es grande: la spec se escribe con `docs/sdd/_plantilla.md`, se acepta antes de los tests, y `odd/tasks/<feature>.md` existe antes del primer cambio de código. Un cambio chico no crea esos archivos.
 2. Escribir el test en rojo. Recién después, el código que lo pone verde.
 3. Una historia de usuario no se da por terminada con reglas dentro de `apps/api` o `apps/web`.
 4. Actualizar `docs/traceability.md` cuando aparezca o cambie un AC, un test o un PR.
@@ -17,7 +17,7 @@ gh project item-add 5 --owner valentinoaraya --url <url-de-la-issue>
 ## Prohibiciones
 
 - No poner reglas de negocio en handlers de Fastify ni en componentes de React.
-- No saltear la spec.
+- No implementar un cambio grande sin spec aceptada en `docs/sdd/` y seguimiento en `odd/tasks/`.
 - No escribir el código de una regla sin un test que haya fallado antes.
 - No importar Drizzle, el parser, el Vercel AI SDK ni Fastify desde `packages/core`.
 - No llamar al modelo si el caso de uso decidió abstenerse.
@@ -35,4 +35,4 @@ Están en `docs/adr/`. Si una decisión cambia, se escribe otro ADR. No se reabr
 
 ## Skills manuales
 
-En `.cursor/skills/` están `/backlog`, `/story` y `/pair`. Solo corren cuando se las nombra. No reemplazan este archivo: la spec sigue antes que el test, y el test rojo antes que el código.
+En `.cursor/skills/` están `/backlog`, `/story` y `/pair`. Solo corren cuando se las nombra. No reemplazan este archivo. En un cambio grande la spec va antes que el test. En uno chico el test rojo va antes que el código.

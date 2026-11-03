@@ -1,5 +1,5 @@
 name: Historia de usuario
-description: Recorre la cadena HU → spec → AC → BDD → tests → código
+description: Se implementa con ODD. La spec se escribe si la historia es grande.
 title: "HU-XXX: "
 labels: []
 body:
@@ -14,7 +14,7 @@ body:
     id: criterios
     attributes:
       label: Criterios de aceptación
-      description: Lista AC-XXX-NN. La spec en docs/sdd se escribe antes de los tests.
+      description: Lista AC-XXX-NN. Si la historia es grande, la spec en docs/sdd se acepta antes de los tests.
       placeholder: |
         - AC-XXX-01:
     validations:
@@ -24,5 +24,5 @@ body:
     attributes:
       label: Trazabilidad
       options:
-        - label: La spec está enlazada o se va a escribir antes de los tests
+        - label: Si la historia es grande, la spec está enlazada o se va a aceptar antes de los tests
         - label: docs/traceability.md se actualiza en el PR
