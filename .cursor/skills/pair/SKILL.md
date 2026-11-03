@@ -1,9 +1,9 @@
 ---
 name: pair
 description: >-
-  Programación de a dos sobre una historia ya afinada y con spec aceptada.
-  Escribe en pasos chicos (un test en rojo, el mínimo código en verde) y
-  espera. Nunca hace commit. Usar solo cuando se nombra /pair.
+  Programación de a dos sobre una historia ya afinada. Si es grande, parte de
+  la spec aceptada. Escribe en pasos chicos (un test en rojo, el mínimo código
+  en verde) y espera. Nunca hace commit. Usar solo cuando se nombra /pair.
 disable-model-invocation: true
 ---
 
@@ -13,8 +13,9 @@ Vos manejás: escribís el código. Quien habla navega: revisa, decide y dice s�
 
 ## 1. Revisar
 
-- Leé la historia (el bloque de `/story`: criterios, plan, «Fuera de alcance») y la spec en `docs/sdd/`.
-- Si no hay spec aceptada, parate y pedí `/story`. No saltees la spec.
+- Leé la historia (el bloque de `/story`: criterios, plan, «Fuera de alcance»).
+- Si el cambio es grande, leé la spec en `docs/sdd/` y el seguimiento en `odd/tasks/`. Si falta la spec aceptada, parate y pedí `/story`.
+- Si el cambio es chico, los criterios acordados alcanzan. No pidas una spec.
 - Contrastá el plan con el código. Si algo ya no encaja, decilo antes de empezar.
 - Si no hay plan, proponé uno de 5 viñetas como máximo y esperá el sí.
 
@@ -76,10 +77,4 @@ Con la lista en verde:
 
 ## 5. Commit
 
-**Nunca hagas commit.** Cuando haya un buen punto (tests en verde, una unidad lógica), avisá y sugerí el mensaje. Rama `feat/HU-XXX-descripcion`. Commits separados:
-
-- `test(#N): red …`
-- `feat(#N): green …`
-- `refactor(#N): …`
-
-`#N` es el issue. El commit lo hace quien habla.
+**Nunca hagas commit.** Cuando haya un buen punto (tests en verde, una unidad lógica), avisá y sugerí un mensaje conventional (`feat`, `fix`, `test` o `refactor`) que junte el test y el comportamiento. Rama `feat/HU-XXX-descripcion`. `#N` es el issue. El commit lo hace quien habla.

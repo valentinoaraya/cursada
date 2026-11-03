@@ -5,3 +5,4 @@
 | [0001](0001-stack.md) | Stack | Aceptado |
 | [0002](0002-arquitectura-hexagonal.md) | Arquitectura hexagonal | Aceptado |
 | [0003](0003-alcance.md) | Alcance del MVP | Aceptado |
+| [0004](0004-flujo-odd.md) | Flujo ODD | Aceptado |

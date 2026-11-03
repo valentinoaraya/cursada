@@ -1,0 +1,18 @@
+---
+description: Orden de trabajo ODD y límites de la arquitectura hexagonal
+alwaysApply: true
+---
+
+# Flujo de Cursada
+
+Cada implementación nueva sigue ODD. El código de dominio vive en `packages/core` y depende de puertos. Fastify, Next.js, Drizzle, el parser y el Vercel AI SDK no contienen reglas de negocio y `packages/core` no los importa.
+
+Un cambio es grande cuando no se puede retomar solo con el pedido y el `git diff`. Una HU con varias reglas entra en ese caso. Antes del código van la spec aceptada en `docs/sdd/` (`docs/sdd/_plantilla.md`) y el seguimiento en `odd/tasks/<feature>.md`. Un cambio chico, como un bug o un criterio ya aceptado, no lleva spec ni archivo de seguimiento.
+
+No implementar un cambio grande sin esa spec y ese seguimiento. No escribir una regla sin un test que haya fallado antes. No mezclar el corpus de dos usuarios. No llamar al modelo cuando el caso de uso se abstiene.
+
+El monorepo usa npm. Las decisiones de stack están en `docs/adr/`; un cambio se registra con otro ADR.
+
+La rama de una historia es `feat/HU-XXX-descripcion`. El ciclo es test rojo, código verde y refactor con los tests verdes. Al commitear, el test va junto al comportamiento en un commit conventional. Al cerrar un AC, un test o un PR, actualizar `docs/traceability.md`.
+
+Cada issue nueva se agrega al proyecto de GitHub **Cursada Scrumban** (`gh project item-add 5 --owner valentinoaraya --url <url>`). No alcanza con crearla en el repositorio.

@@ -15,7 +15,7 @@ Cursada es un copiloto de estudio que responde **solo con el material del usuari
    - Evals y observabilidad (Langfuse), costo/latencia por request.
    - Multi-tenant (aislamiento por usuario y materia).
    - CI/CD, testing serio, arquitectura limpia.
-3. **Proceso:** desarrollado de cero con **SDD (Spec-Driven Development)** y **TDD** como guías, con trazabilidad completa.
+3. **Proceso:** cada implementación sigue **ODD**. La spec se escribe cuando el cambio es grande. El test rojo va antes del código, con trazabilidad.
 
 ### Problema
 El material de cada materia está disperso (PDFs, apuntes, Moodle). Para estudiar hace falta:
@@ -87,10 +87,11 @@ cursada/
 ├─ evals/             # golden set + runner (suite separada)
 ├─ features/          # Gherkin (BDD) con tags # AC-XXX-NN
 ├─ docs/
-│  ├─ sdd/            # specs por HU (+ _plantilla.md)
+│  ├─ sdd/            # specs de cambios grandes (+ _plantilla.md)
 │  ├─ adr/            # decisiones de arquitectura
 │  ├─ guia-de-trabajo.md
 │  └─ traceability.md
+├─ odd/tasks/         # seguimiento ODD de un cambio grande
 ├─ .cursor/rules/     # reglas para el agente
 ├─ AGENTS.md
 └─ docker-compose.yml # Postgres + pgvector (+ Langfuse opcional)
@@ -128,40 +129,36 @@ Acordadas al planificar el stack y cerradas en los ADR de S0. El detalle está e
 - **Proxy:** Nginx en el VPS, que ya está en uso. Termina TLS y enruta la web y la API. Postgres permanece en la red interna de Docker, sin puerto público. En el `server` de la API, `proxy_buffering off` y un timeout de lectura alto para que el streaming llegue al navegador a medida que se genera.
 - **Arquitectura:** hexagonal, como en el árbol de arriba.
 
-## 5. Flujo de trabajo: SDD + TDD
+## 5. Flujo de trabajo: ODD
 
-Inspirado en el proyecto de la facultad [seguimiento-medicion](https://github.com/FaustinoDuran/seguimiento-medicion), que usa un SDD propio (plantillas Markdown + reglas para el agente, sin spec-kit ni OpenSpec).
+Cada implementación nueva sigue ODD. El detalle operativo está en `docs/guia-de-trabajo.md` y la decisión, en [ADR-0004](docs/adr/0004-flujo-odd.md).
 
-### Cadena obligatoria
-**HU (Issue) → SDD → Criterios AC → BDD (Gherkin) → Tests → Código → PR**
+### Tamaño
+- **Chico:** se puede retomar con el pedido y el `git diff`. No hay spec. El ciclo es test rojo y código.
+- **Grande:** no se puede retomar así, o la HU tiene varias reglas. Antes del código van la spec aceptada en `docs/sdd/` y el seguimiento en `odd/tasks/<feature>.md`.
 
-### Tipos de trabajo
-- `HU-XXX`: historia de usuario → recorre la cadena completa.
-- `TASK-XXX`: infraestructura → sin SDD ni BDD.
-- `BUG-XXX`: empieza con un test que reproduce el error.
+`TASK-XXX` de infraestructura no lleva spec. `BUG-XXX` empieza con un test que reproduce el error.
 
-### Plantilla de spec (`docs/sdd/_plantilla.md`)
-Secciones fijas: objetivo · entradas · salidas · reglas de negocio · restricciones · casos límite · errores · criterios `AC-XXX-NN` · trazabilidad (feature, tests, código). **Se escribe antes de los tests.**
+### Spec de un cambio grande (`docs/sdd/_plantilla.md`)
+Secciones fijas: objetivo · entradas · salidas · reglas de negocio · restricciones · casos límite · errores · criterios `AC-XXX-NN` · trazabilidad. Se acepta antes de los tests. HU-001 conserva la spec con la que se construyó.
 
 ### BDD
-- `features/HU-XXX-*.feature` en español, cada escenario etiquetado `# AC-XXX-NN`.
-- Automatizar con Cucumber.js cuando el use case esté en verde.
+- `features/HU-XXX-*.feature` en español, cada escenario etiquetado `# AC-XXX-NN`, cuando la historia se cuenta en Gherkin.
+- Automatizar con Cucumber.js cuando el use case esté en verde. No es un paso previo al código.
 
-### TDD y commits
+### Ciclo y commits
 - Rama `feat/HU-XXX-descripcion`.
-- Commits separados:
-  - `test(#N): red …`
-  - `feat(#N): green …`
-  - `refactor(#N): …`
+- Test rojo, código verde, refactor con los tests verdes.
+- El commit junta el test y el comportamiento. Mensaje conventional (`feat`, `fix`, `test`, `refactor`).
 - Tests unitarios de reglas con **fakes deterministas** de LLM y embeddings y repos en memoria (sin HTTP, sin Postgres, sin API externa).
 - Tests de integración contra Postgres + pgvector en Docker (se saltean si falta la variable de entorno).
 
 ### Gobernanza
-- `AGENTS.md` y `.cursor/rules/*.mdc`: orden de trabajo y prohibiciones para el agente (p. ej. no poner reglas en handlers/React, no saltear la spec, no escribir código sin test en rojo).
+- `AGENTS.md` y `.cursor/rules/flujo-odd.mdc`: orden de trabajo y prohibiciones para el agente (p. ej. no poner reglas en handlers/React, no implementar un cambio grande sin spec, no escribir código sin test en rojo).
 - ADRs en `docs/adr/`.
-- `docs/traceability.md`: tabla HU → Issue → SDD → AC → BDD → tests → código → PR.
+- `docs/traceability.md`: tabla HU → Issue → Spec → AC → BDD → tests → código → PR.
 - Templates de Issue y PR con checklist de trazabilidad.
-- **Mejora sobre el repo de referencia:** CI con GitHub Actions desde el día 0.
+- CI con GitHub Actions desde el día 0.
 
 ### Ejemplos de criterios de aceptación
 - `AC-001-xx`: No re-indexa un documento cuyo hash ya existe para ese usuario y materia.
@@ -189,7 +186,7 @@ Los tests son deterministas; las evals miden calidad de un sistema no determinis
 
 | Sprint | Entregable |
 |---|---|
-| **S0** | ADRs (stack, hexagonal, alcance), scaffolding del monorepo, docker-compose con pgvector, plantillas SDD, AGENTS.md + rules, CI |
+| **S0** | ADRs (stack, hexagonal, alcance), scaffolding del monorepo, docker-compose con pgvector, plantilla de spec, AGENTS.md + rules, CI |
 | **S1** | HU-001 Ingesta: parse, chunk, embed, dedupe por hash |
 | **S2** | HU-002 Preguntas con citas, streaming, abstención, búsqueda híbrida |
 | **S3** | Golden set, runner de evals, Langfuse, reranking con métricas comparadas |
@@ -208,8 +205,6 @@ Los tests son deterministas; las evals miden calidad de un sistema no determinis
 - Demo deployada + video corto.
 - Post técnico en LinkedIn y sección "Destacado" con demo y repo.
 
-## 10. Primer paso sugerido
+## 10. Cómo sigue
 
-1. Crear repo y ejecutar **S0** (TASK-001: scaffolding + CI; ADR-0001 stack; ADR-0002 arquitectura hexagonal).
-2. Escribir `docs/sdd/HU-001-ingesta.md` con sus criterios AC.
-3. Primer test en rojo: "no re-indexa un documento con el mismo hash".
+S0 y la spec de HU-001 ya están hechos. Una implementación nueva sigue `docs/guia-de-trabajo.md`: ODD en todo cambio, y spec en `docs/sdd/` solo si el cambio es grande.

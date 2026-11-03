@@ -25,7 +25,7 @@ npm run dev:web
 - [CURSADA.md](CURSADA.md) — contexto del producto
 - [docs/adr](docs/adr/README.md) — decisiones
 - [docs/sdd/HU-001-ingesta.md](docs/sdd/HU-001-ingesta.md) — primera historia
-- [docs/guia-de-trabajo.md](docs/guia-de-trabajo.md) — SDD y TDD
+- [docs/guia-de-trabajo.md](docs/guia-de-trabajo.md) — ODD; spec si el cambio es grande
 - [AGENTS.md](AGENTS.md) — reglas para quien escribe código
 
 El README en inglés con resultados de evaluaciones es un entregable del Sprint 5.
