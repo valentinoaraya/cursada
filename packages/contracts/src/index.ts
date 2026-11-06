@@ -1,9 +1,12 @@
 import { z } from "zod";
 
 export const citationSchema = z.object({
-  chunkId: z.string().min(1),
-  docId: z.string().min(1),
+  filename: z.string().min(1),
   pagina: z.number().int().positive(),
+});
+
+export const abstainSchema = z.object({
+  notice: z.literal("No está en tu material"),
 });
 
 export const answerSchema = z.object({
@@ -11,5 +14,14 @@ export const answerSchema = z.object({
   citations: z.array(citationSchema),
 });
 
+export const ingestResultSchema = z.object({
+  documentId: z.string().min(1),
+  alreadyIndexed: z.boolean(),
+  chunkCount: z.number().int().nonnegative(),
+});
+
 export type Citation = z.infer<typeof citationSchema>;
+export type Abstain = z.infer<typeof abstainSchema>;
 export type Answer = z.infer<typeof answerSchema>;
+export type IngestResultView = z.infer<typeof ingestResultSchema>;
+

@@ -1,4 +1,14 @@
+export { AskQuestion } from "./qa/ask-question.js";
 export { IngestDocument } from "./ingestion/ingest-document.js";
+export type { LlmProvider, MaterialSearch, MaterialSearchInput } from "./qa/ports.js";
+export type {
+  AskQuestionAbstain,
+  AskQuestionAnswer,
+  AskQuestionInput,
+  AskQuestionResult,
+  Citation,
+  RetrievedPassage,
+} from "./qa/types.js";
 export type {
   ChunkStore,
   DocumentParser,

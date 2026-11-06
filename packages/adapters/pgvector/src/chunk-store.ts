@@ -1,10 +1,16 @@
-import type { ChunkStore, NewChunk } from "@cursada/core";
+import type { ChunkStore, MaterialSearchInput, NewChunk, RetrievedPassage } from "@cursada/core";
 import { and, eq, sql } from "drizzle-orm";
 import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import { integer, pgTable, text, unique, vector } from "drizzle-orm/pg-core";
+import { customType, integer, pgTable, text, unique, vector } from "drizzle-orm/pg-core";
 import postgres, { type Sql } from "postgres";
 
 const embeddingDimensions = 768;
+
+const tsvector = customType<{ data: string }>({
+  dataType() {
+    return "tsvector";
+  },
+});
 
 export const documents = pgTable(
   "documents",
@@ -13,6 +19,7 @@ export const documents = pgTable(
     userId: text("user_id").notNull(),
     materia: text("materia").notNull(),
     hash: text("hash").notNull(),
+    filename: text("filename").notNull(),
   },
   (table) => [unique("documents_user_materia_hash").on(table.userId, table.materia, table.hash)],
 );
@@ -29,6 +36,7 @@ export const chunks = pgTable("chunks", {
   hash: text("hash").notNull(),
   text: text("text").notNull(),
   embedding: vector("embedding", { dimensions: embeddingDimensions }).notNull(),
+  searchTsv: tsvector("search_tsv"),
 });
 
 export class PgVectorChunkStore implements ChunkStore {
@@ -47,8 +55,12 @@ export class PgVectorChunkStore implements ChunkStore {
         user_id text NOT NULL,
         materia text NOT NULL,
         hash text NOT NULL,
+        filename text NOT NULL DEFAULT 'documento.pdf',
         CONSTRAINT documents_user_materia_hash UNIQUE (user_id, materia, hash)
       )
+    `);
+    await db.execute(sql`
+      ALTER TABLE documents ADD COLUMN IF NOT EXISTS filename text NOT NULL DEFAULT 'documento.pdf'
     `);
     const columns = await client<{ col_type: string }[]>`
       SELECT format_type(a.atttypid, a.atttypmod) AS col_type
@@ -73,10 +85,12 @@ export class PgVectorChunkStore implements ChunkStore {
         pagina integer NOT NULL,
         hash text NOT NULL,
         text text NOT NULL,
-        embedding vector(${embeddingDimensions}) NOT NULL
+        embedding vector(${embeddingDimensions}) NOT NULL,
+        search_tsv tsvector
       )
     `),
     );
+    await db.execute(sql`ALTER TABLE chunks ADD COLUMN IF NOT EXISTS search_tsv tsvector`);
     return new PgVectorChunkStore(db, client);
   }
 
@@ -92,8 +106,52 @@ export class PgVectorChunkStore implements ChunkStore {
     return row ? { documentId: row.documentId } : null;
   }
 
+  async search(input: MaterialSearchInput): Promise<RetrievedPassage[]> {
+    if (input.questionEmbedding.length !== embeddingDimensions) {
+      return [];
+    }
+
+    const embeddingVector = `[${input.questionEmbedding.join(",")}]`;
+    const rows = await this.client<
+      {
+        id: string;
+        filename: string;
+        pagina: number;
+        text: string;
+      }[]
+    >`
+      SELECT
+        c.id,
+        d.filename,
+        c.pagina,
+        c.text
+      FROM chunks c
+      INNER JOIN documents d ON d.document_id = c.document_id
+      WHERE c.user_id = ${input.userId}
+        AND c.materia = ${input.materia}
+      ORDER BY (
+        COALESCE(ts_rank(c.search_tsv, plainto_tsquery('spanish', ${input.question})), 0)
+        + (1 - (c.embedding <=> ${embeddingVector}::vector))
+      ) DESC
+      LIMIT 8
+    `;
+
+    return rows.map((row) => ({
+      chunkId: row.id,
+      filename: row.filename,
+      pagina: row.pagina,
+      text: row.text,
+    }));
+  }
+
   async save(
-    document: { documentId: string; userId: string; materia: string; hash: string },
+    document: {
+      documentId: string;
+      userId: string;
+      materia: string;
+      hash: string;
+      filename: string;
+    },
     newChunks: NewChunk[],
   ): Promise<void> {
     await this.db.transaction(async (tx) => {
@@ -114,6 +172,11 @@ export class PgVectorChunkStore implements ChunkStore {
           embedding: chunk.embedding,
         })),
       );
+      for (const chunk of newChunks) {
+        await tx.execute(
+          sql`UPDATE chunks SET search_tsv = to_tsvector('spanish', ${chunk.text}) WHERE id = ${chunk.id}`,
+        );
+      }
     });
   }
 

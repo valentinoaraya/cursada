@@ -96,3 +96,84 @@ describe("POST /documents", () => {
     await app.close();
   });
 });
+
+describe("POST /questions", () => {
+  it("abstención devuelve el aviso y no hace streaming", async () => {
+    const app = buildApp({
+      logger: false,
+      ask: {
+        async execute() {
+          return { kind: "abstain", notice: "No está en tu material" };
+        },
+      },
+    });
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/questions",
+      payload: { materia: "analisis-de-sistemas", question: "¿Qué es un sistema?" },
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({ notice: "No está en tu material" });
+
+    await app.close();
+  });
+
+  it("respuesta con evidencia hace streaming y cierra con las citas", async () => {
+    const app = buildApp({
+      logger: false,
+      ask: {
+        async execute() {
+          const stream = async function* () {
+            yield "Un sistema ";
+            yield "es un conjunto.";
+          }();
+          return {
+            kind: "answer",
+            stream,
+            citations: [{ filename: "apuntes.pdf", pagina: 2 }],
+          };
+        },
+      },
+    });
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/questions",
+      payload: { materia: "analisis-de-sistemas", question: "¿Qué es un sistema?" },
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.headers["content-type"]).toContain("text/event-stream");
+    expect(response.body).toContain('"token":"Un sistema "');
+    expect(response.body).toContain('"citations":[{"filename":"apuntes.pdf","pagina":2}]');
+    expect(response.body).toContain("[DONE]");
+
+    await app.close();
+  });
+
+  it("sin materia o pregunta responde 400", async () => {
+    let calls = 0;
+    const app = buildApp({
+      logger: false,
+      ask: {
+        async execute() {
+          calls += 1;
+          return { kind: "abstain", notice: "No está en tu material" };
+        },
+      },
+    });
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/questions",
+      payload: { materia: "", question: "hola" },
+    });
+
+    expect(response.statusCode).toBe(400);
+    expect(calls).toBe(0);
+
+    await app.close();
+  });
+});
