@@ -57,7 +57,13 @@ class FakeChunkStore implements ChunkStore {
   }
 
   async save(
-    document: { documentId: string; userId: string; materia: string; hash: string },
+    document: {
+      documentId: string;
+      userId: string;
+      materia: string;
+      hash: string;
+      filename: string;
+    },
     chunks: NewChunk[],
   ): Promise<void> {
     this.documents.push(document);

@@ -36,7 +36,13 @@ export class IngestDocument {
       embedding: vectors[index] ?? [],
     }));
     await this.chunks.save(
-      { documentId, userId: input.userId, materia: input.materia, hash },
+      {
+        documentId,
+        userId: input.userId,
+        materia: input.materia,
+        hash,
+        filename: input.filename,
+      },
       saved,
     );
 

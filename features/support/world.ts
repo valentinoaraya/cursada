@@ -1,8 +1,21 @@
 import { setWorldConstructor, World } from "@cucumber/cucumber";
-import { IngestDocument } from "@cursada/core";
-import type { ChunkStore, DocumentParser, EmbeddingProvider } from "@cursada/core";
-import type { IngestDocumentInput, IngestResult, NewChunk, ParsedPage } from "@cursada/core";
+import { AskQuestion, IngestDocument } from "@cursada/core";
+import type {
+  AskQuestionResult,
+  ChunkStore,
+  DocumentParser,
+  EmbeddingProvider,
+  IngestDocumentInput,
+  IngestResult,
+  LlmProvider,
+  MaterialSearch,
+  NewChunk,
+  ParsedPage,
+  RetrievedPassage,
+} from "@cursada/core";
 import type { Clock, IdGenerator } from "@cursada/core";
+
+type ScopedPassage = RetrievedPassage & { userId: string; materia: string };
 
 export class FakeParser implements DocumentParser {
   calls = 0;
@@ -51,7 +64,13 @@ export class FakeChunkStore implements ChunkStore {
   }
 
   async save(
-    document: { documentId: string; userId: string; materia: string; hash: string },
+    document: {
+      documentId: string;
+      userId: string;
+      materia: string;
+      hash: string;
+      filename: string;
+    },
     chunks: NewChunk[],
   ): Promise<void> {
     this.documents.push(document);
@@ -89,6 +108,11 @@ export class IngestWorld extends World {
   firstResult?: IngestResult;
   lastResult?: IngestResult;
   lastError?: Error;
+  searchPassages: ScopedPassage[] = [];
+  llmAnswer = "";
+  llmCitations: Array<{ filename: string; pagina: number }> = [];
+  llmCalls = 0;
+  lastAskResult?: AskQuestionResult;
 
   build(): IngestDocument {
     return new IngestDocument(this.parser, this.embeddings, this.chunks, new FixedClock(), this.ids);
@@ -113,6 +137,39 @@ export class IngestWorld extends World {
     } catch (error) {
       this.lastError = error as Error;
     }
+  }
+
+  async ask(input: { userId: string; materia: string; question: string }) {
+    const passages = this.searchPassages;
+    const llmAnswer = this.llmAnswer;
+    const llmCitations = this.llmCitations;
+    const search: MaterialSearch = {
+      async search(params) {
+        return passages
+          .filter(
+            (passage) => passage.userId === params.userId && passage.materia === params.materia,
+          )
+          .map(({ chunkId, filename, pagina, text }) => ({ chunkId, filename, pagina, text }));
+      },
+    };
+    const llm: LlmProvider = {
+      answer: async () => {
+        this.llmCalls += 1;
+        const stream = async function* () {
+          yield llmAnswer;
+        }();
+        return { stream, citations: llmCitations };
+      },
+    };
+    this.lastAskResult = await new AskQuestion(new FakeEmbeddings(), search, llm).execute(input);
+  }
+
+  async readStream(stream: AsyncIterable<string>): Promise<string> {
+    let text = "";
+    for await (const chunk of stream) {
+      text += chunk;
+    }
+    return text;
   }
 }
 

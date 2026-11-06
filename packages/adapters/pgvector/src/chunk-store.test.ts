@@ -36,6 +36,7 @@ describe.skipIf(!integration)("PgVectorChunkStore", () => {
         userId: "user-1",
         materia: "analisis-de-sistemas",
         hash: "abc",
+        filename: "apuntes.pdf",
       },
       [],
     );
@@ -52,6 +53,7 @@ describe.skipIf(!integration)("PgVectorChunkStore", () => {
         userId: "user-1",
         materia: "analisis-de-sistemas",
         hash: "hash-compartido",
+        filename: "apuntes.pdf",
       },
       [],
     );
@@ -68,6 +70,7 @@ describe.skipIf(!integration)("PgVectorChunkStore", () => {
         userId: "user-1",
         materia: "analisis-de-sistemas",
         hash: "hash-materia",
+        filename: "apuntes.pdf",
       },
       [],
     );
@@ -84,6 +87,7 @@ describe.skipIf(!integration)("PgVectorChunkStore", () => {
         userId: "user-1",
         materia: "analisis-de-sistemas",
         hash: "hash-vacio",
+        filename: "apuntes.pdf",
       },
       [],
     );
@@ -100,6 +104,7 @@ describe.skipIf(!integration)("PgVectorChunkStore", () => {
         userId: "user-1",
         materia: "analisis-de-sistemas",
         hash: "hash-chunk",
+        filename: "apuntes.pdf",
       },
       [
         {
@@ -172,6 +177,7 @@ describe.skipIf(!integration)("PgVectorChunkStore", () => {
           userId: "user-1",
           materia: "analisis-de-sistemas",
           hash: "hash-768",
+          filename: "apuntes.pdf",
         },
         [
           {

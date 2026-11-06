@@ -1,4 +1,4 @@
-import type { IngestDocumentInput, IngestResult } from "@cursada/core";
+import type { AskQuestionInput, AskQuestionResult, IngestDocumentInput, IngestResult } from "@cursada/core";
 import multipart from "@fastify/multipart";
 import Fastify, { type FastifyInstance } from "fastify";
 
@@ -6,11 +6,16 @@ export type DocumentIngest = {
   execute(input: IngestDocumentInput): Promise<IngestResult>;
 };
 
+export type QuestionAsk = {
+  execute(input: AskQuestionInput): Promise<AskQuestionResult>;
+};
+
 const localUserId = "local";
 
 export function buildApp(options?: {
   logger?: boolean;
   ingest?: DocumentIngest;
+  ask?: QuestionAsk;
 }): FastifyInstance {
   const app = Fastify({ logger: options?.logger ?? true });
 
@@ -33,6 +38,44 @@ export function buildApp(options?: {
         content,
       });
     });
+  }
+
+  if (options?.ask) {
+    const ask = options.ask;
+    app.post<{ Body: { materia?: string; question?: string } }>(
+      "/questions",
+      async (request, reply) => {
+        const materia = request.body?.materia ?? "";
+        const question = request.body?.question ?? "";
+        if (materia.trim() === "" || question.trim() === "") {
+          return reply.code(400).send({ message: "faltan materia o pregunta" });
+        }
+
+        const result = await ask.execute({ userId: localUserId, materia, question });
+        if (result.kind === "abstain") {
+          return { notice: result.notice };
+        }
+
+        reply.raw.writeHead(200, {
+          "Content-Type": "text/event-stream; charset=utf-8",
+          "Cache-Control": "no-cache",
+          Connection: "keep-alive",
+        });
+
+        try {
+          for await (const token of result.stream) {
+            reply.raw.write(`data: ${JSON.stringify({ token })}\n\n`);
+          }
+          reply.raw.write(`data: ${JSON.stringify({ citations: result.citations })}\n\n`);
+          reply.raw.write("data: [DONE]\n\n");
+        } catch (error) {
+          const message = error instanceof Error ? error.message : "falló el modelo";
+          reply.raw.write(`data: ${JSON.stringify({ error: message })}\n\n`);
+        }
+        reply.raw.end();
+        return reply;
+      },
+    );
   }
 
   return app;

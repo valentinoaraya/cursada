@@ -15,7 +15,13 @@ export interface ChunkStore {
     hash: string,
   ): Promise<{ documentId: string } | null>;
   save(
-    document: { documentId: string; userId: string; materia: string; hash: string },
+    document: {
+      documentId: string;
+      userId: string;
+      materia: string;
+      hash: string;
+      filename: string;
+    },
     chunks: NewChunk[],
   ): Promise<void>;
 }
