@@ -1,3 +1,4 @@
+import type { MaterialSearch } from "../qa/ports.js";
 import type { NewChunk, ParsedPage } from "./types.js";
 
 export interface DocumentParser {
@@ -8,7 +9,7 @@ export interface EmbeddingProvider {
   embed(texts: string[]): Promise<number[][]>;
 }
 
-export interface ChunkStore {
+export interface ChunkStore extends MaterialSearch {
   findByHash(
     userId: string,
     materia: string,

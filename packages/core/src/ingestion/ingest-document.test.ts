@@ -49,6 +49,10 @@ class FakeChunkStore implements ChunkStore {
   private readonly documents: { documentId: string; userId: string; materia: string; hash: string }[] =
     [];
 
+  async search() {
+    return [];
+  }
+
   async findByHash(userId: string, materia: string, hash: string) {
     const found = this.documents.find(
       (document) => document.userId === userId && document.materia === materia && document.hash === hash,

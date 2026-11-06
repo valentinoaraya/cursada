@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import type { IngestDocumentInput, IngestResult } from "@cursada/core";
+import type {
+  GeneratePracticeQuestionInput,
+  GeneratePracticeQuestionResult,
+  GradePracticeAnswerInput,
+  GradePracticeAnswerResult,
+  IngestDocumentInput,
+  IngestResult,
+} from "@cursada/core";
 import { buildApp } from "./app.js";
 
 const bytes = new Uint8Array([1, 2, 3, 4]);
@@ -173,6 +180,149 @@ describe("POST /questions", () => {
 
     expect(response.statusCode).toBe(400);
     expect(calls).toBe(0);
+
+    await app.close();
+  });
+});
+
+describe("POST /practice/generate", () => {
+  it("devuelve la pregunta", async () => {
+    const calls: GeneratePracticeQuestionInput[] = [];
+    const app = buildApp({
+      logger: false,
+      practiceGenerate: {
+        async execute(input) {
+          calls.push(input);
+          return { kind: "question", question: "¿Qué es un sistema?" };
+        },
+      },
+    });
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/practice/generate",
+      payload: { materia: "analisis-de-sistemas", unidad: "1" },
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({ question: "¿Qué es un sistema?" });
+    expect(calls).toEqual([
+      { userId: "local", materia: "analisis-de-sistemas", unidad: "1" },
+    ]);
+
+    await app.close();
+  });
+
+  it("abstención devuelve el aviso", async () => {
+    const app = buildApp({
+      logger: false,
+      practiceGenerate: {
+        async execute(): Promise<GeneratePracticeQuestionResult> {
+          return { kind: "abstain", notice: "No está en tu material" };
+        },
+      },
+    });
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/practice/generate",
+      payload: { materia: "m", unidad: "1" },
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({ notice: "No está en tu material" });
+
+    await app.close();
+  });
+
+  it("sin materia o unidad responde 400", async () => {
+    let calls = 0;
+    const app = buildApp({
+      logger: false,
+      practiceGenerate: {
+        async execute() {
+          calls += 1;
+          return { kind: "question", question: "x" };
+        },
+      },
+    });
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/practice/generate",
+      payload: { materia: "", unidad: "1" },
+    });
+
+    expect(response.statusCode).toBe(400);
+    expect(calls).toBe(0);
+
+    await app.close();
+  });
+});
+
+describe("POST /practice/grade", () => {
+  it("devuelve veredicto y citas", async () => {
+    const calls: GradePracticeAnswerInput[] = [];
+    const app = buildApp({
+      logger: false,
+      practiceGrade: {
+        async execute(input) {
+          calls.push(input);
+          return {
+            kind: "graded",
+            verdict: "Está bien",
+            citations: [{ filename: "apuntes.pdf", pagina: 2 }],
+          };
+        },
+      },
+    });
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/practice/grade",
+      payload: {
+        materia: "analisis-de-sistemas",
+        unidad: "1",
+        question: "¿Qué es un sistema?",
+        answer: "Un conjunto.",
+      },
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({
+      verdict: "Está bien",
+      citations: [{ filename: "apuntes.pdf", pagina: 2 }],
+    });
+    expect(calls).toEqual([
+      {
+        userId: "local",
+        materia: "analisis-de-sistemas",
+        unidad: "1",
+        question: "¿Qué es un sistema?",
+        answer: "Un conjunto.",
+      },
+    ]);
+
+    await app.close();
+  });
+
+  it("sin algún campo requerido responde 400", async () => {
+    const app = buildApp({
+      logger: false,
+      practiceGrade: {
+        async execute(): Promise<GradePracticeAnswerResult> {
+          return { kind: "graded", verdict: "Está bien", citations: [] };
+        },
+      },
+    });
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/practice/grade",
+      payload: { materia: "m", unidad: "1", question: "", answer: "x" },
+    });
+
+    expect(response.statusCode).toBe(400);
 
     await app.close();
   });

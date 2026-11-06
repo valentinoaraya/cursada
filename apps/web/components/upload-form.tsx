@@ -7,10 +7,11 @@ import { uploadDocument } from "../lib/upload-client";
 type UploadFormProps = {
   materia: string;
   onMateriaChange: (materia: string) => void;
+  unidad: string;
+  onUnidadChange: (unidad: string) => void;
 };
 
-export function UploadForm({ materia, onMateriaChange }: UploadFormProps) {
-  const [unidad, setUnidad] = useState("1");
+export function UploadForm({ materia, onMateriaChange, unidad, onUnidadChange }: UploadFormProps) {
   const [file, setFile] = useState<File | null>(null);
   const [result, setResult] = useState<IngestResultView | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -65,7 +66,7 @@ export function UploadForm({ materia, onMateriaChange }: UploadFormProps) {
           <input
             name="unidad"
             value={unidad}
-            onChange={(event) => setUnidad(event.target.value)}
+            onChange={(event) => onUnidadChange(event.target.value)}
             required
             disabled={pending}
             autoComplete="off"
