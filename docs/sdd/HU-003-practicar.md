@@ -96,4 +96,4 @@ Si la búsqueda no devuelve ningún pasaje, corregir devuelve el aviso «No est�
 | Tests | `packages/core/src/qa/practice-question.test.ts`; `…/grade-practice-answer.test.ts` | Verde |
 | Código | `GeneratePracticeQuestion`, `GradePracticeAnswer`, `AiSdkPracticeLlmProvider`, `PgVectorChunkStore.search` con `unidad`, `POST /practice/generate`, `POST /practice/grade`, web `PracticeForm` + `/api/practice/*` | Cubre AC-003-01 a AC-003-04 |
 | Issue | [#5](https://github.com/valentinoaraya/cursada/issues/5) | Abierta |
-| PR | — | Sin abrir |
+| PR | [#16](https://github.com/valentinoaraya/cursada/pull/16) | Abierto |

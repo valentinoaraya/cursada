@@ -18,7 +18,7 @@ Tests: `npm test` · `npm run test:bdd`
 - T2. S2. hecho. `GradePracticeAnswer`, citas desde pasajes recuperados, tests en verde.
 - T3. S3. hecho. Filtro `unidad` en búsqueda (puerto + pgvector), tests y Cucumber en verde.
 - T4. S4. hecho. Abstención sin modelo, tests y Cucumber en verde.
-- T5. S1–S4. hecho. `AiSdkPracticeLlmProvider`, rutas Fastify, proxies Next, `PracticeForm`, BDD `HU-003-practicar.feature`. Falta PR.
+- T5. S1–S4. hecho. `AiSdkPracticeLlmProvider`, rutas Fastify, proxies Next, `PracticeForm`, BDD `HU-003-practicar.feature`. PR [#16](https://github.com/valentinoaraya/cursada/pull/16).
 
 ## Log
 
@@ -30,4 +30,4 @@ La historia se tomó como grande: tiene varias reglas y no se retoma solo con el
 
 L3. 2026-11-06. vamos con la implementacion.
 
-Implementación en verde: dominio, adapter LLM de práctica, búsqueda por unidad en pgvector, API, web, BDD. `npm test`, `npm run test:bdd` y `npm run typecheck` pasan. Falta PR y cerrar issue #5.
+Implementación en verde: dominio, adapter LLM de práctica, búsqueda por unidad en pgvector, API, web, BDD. `npm test`, `npm run test:bdd` y `npm run typecheck` pasan. PR [#16](https://github.com/valentinoaraya/cursada/pull/16). Falta merge y cerrar issue #5. El rediseño de layout web queda fuera de este PR.
