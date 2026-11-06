@@ -38,4 +38,4 @@ Web: `AskForm`, `ask-client` con tests, `POST /api/questions` proxy al Fastify, 
 
 L5. 2026-11-05. Metamos la UI de carga de documentos.
 
-`UploadForm` + `upload-client` + proxy `/api/documents`. `StudyWorkspace` comparte la materia entre carga y pregunta. Falta commit/PR.
+`UploadForm` + `upload-client` + proxy `/api/documents`. `StudyWorkspace` comparte la materia entre carga y pregunta. PR [#15](https://github.com/valentinoaraya/cursada/pull/15).

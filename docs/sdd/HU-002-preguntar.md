@@ -79,4 +79,4 @@ Si la búsqueda no devuelve ningún pasaje:
 | Tests | `packages/core/src/qa/ask-question.test.ts` | Verde. Cubre `AC-002-01` a `AC-002-03` con fakes |
 | Código | `packages/core/src/qa/ask-question.ts`; pgvector `search`+`filename`; llm streaming; `POST /questions`; `apps/web` AskForm + `ask-client` | Cubre `AC-002-01` a `AC-002-03` |
 | Issue | [#4](https://github.com/valentinoaraya/cursada/issues/4) | Abierta |
-| PR | — | Pendiente |
+| PR | [#15](https://github.com/valentinoaraya/cursada/pull/15) | Abierto |
