@@ -28,3 +28,44 @@ export type RetrievedPassage = {
   pagina: number;
   text: string;
 };
+
+export type GeneratePracticeQuestionInput = {
+  userId: string;
+  materia: string;
+  unidad: string;
+};
+
+export type GeneratePracticeQuestionAbstain = {
+  kind: "abstain";
+  notice: "No está en tu material";
+};
+
+export type GeneratePracticeQuestionOk = {
+  kind: "question";
+  question: string;
+};
+
+export type GeneratePracticeQuestionResult = GeneratePracticeQuestionAbstain | GeneratePracticeQuestionOk;
+
+export type GradePracticeAnswerInput = {
+  userId: string;
+  materia: string;
+  unidad: string;
+  question: string;
+  answer: string;
+};
+
+export type GradePracticeAnswerAbstain = {
+  kind: "abstain";
+  notice: "No está en tu material";
+};
+
+export type PracticeVerdict = "Está bien" | "Fallaste";
+
+export type GradePracticeAnswerGraded = {
+  kind: "graded";
+  verdict: PracticeVerdict;
+  citations: Citation[];
+};
+
+export type GradePracticeAnswerResult = GradePracticeAnswerAbstain | GradePracticeAnswerGraded;

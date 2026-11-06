@@ -10,7 +10,7 @@ const input = {
   question: "¿Qué es un sistema?",
 };
 
-type ScopedPassage = RetrievedPassage & { userId: string; materia: string };
+type ScopedPassage = RetrievedPassage & { userId: string; materia: string; unidad?: string };
 
 class FakeEmbeddings implements EmbeddingProvider {
   calls = 0;
@@ -27,10 +27,16 @@ class InMemoryMaterialSearch implements MaterialSearch {
   async search(params: {
     userId: string;
     materia: string;
+    unidad?: string;
   }): Promise<RetrievedPassage[]> {
     return this.passages
       .filter(
-        (passage) => passage.userId === params.userId && passage.materia === params.materia,
+        (passage) =>
+          passage.userId === params.userId &&
+          passage.materia === params.materia &&
+          (params.unidad === undefined ||
+            params.unidad === passage.unidad ||
+            passage.unidad === undefined),
       )
       .map(({ chunkId, filename, pagina, text }) => ({ chunkId, filename, pagina, text }));
   }

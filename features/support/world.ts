@@ -1,21 +1,26 @@
 import { setWorldConstructor, World } from "@cucumber/cucumber";
-import { AskQuestion, IngestDocument } from "@cursada/core";
+import { AskQuestion, GeneratePracticeQuestion, GradePracticeAnswer, IngestDocument } from "@cursada/core";
 import type {
   AskQuestionResult,
   ChunkStore,
   DocumentParser,
   EmbeddingProvider,
+  GeneratePracticeQuestionResult,
+  GradePracticeAnswerResult,
   IngestDocumentInput,
   IngestResult,
   LlmProvider,
   MaterialSearch,
   NewChunk,
   ParsedPage,
+  PracticeLlmProvider,
+  PracticeVerdict,
   RetrievedPassage,
 } from "@cursada/core";
 import type { Clock, IdGenerator } from "@cursada/core";
 
-type ScopedPassage = RetrievedPassage & { userId: string; materia: string };
+type ScopedPassage = RetrievedPassage & { userId: string; materia: string; unidad?: string };
+type ScopedPracticePassage = RetrievedPassage & { userId: string; materia: string; unidad: string };
 
 export class FakeParser implements DocumentParser {
   calls = 0;
@@ -55,6 +60,10 @@ export class FailingEmbeddings implements EmbeddingProvider {
 export class FakeChunkStore implements ChunkStore {
   savedBatches: NewChunk[][] = [];
   documents: { documentId: string; userId: string; materia: string; hash: string }[] = [];
+
+  async search() {
+    return [];
+  }
 
   async findByHash(userId: string, materia: string, hash: string) {
     const found = this.documents.find(
@@ -113,6 +122,15 @@ export class IngestWorld extends World {
   llmCitations: Array<{ filename: string; pagina: number }> = [];
   llmCalls = 0;
   lastAskResult?: AskQuestionResult;
+  practiceSearchPassages: ScopedPracticePassage[] = [];
+  practiceGeneratedQuestion = "";
+  practiceVerdict: PracticeVerdict = "Está bien";
+  practiceGenerateCalls = 0;
+  practiceGradeCalls = 0;
+  lastPracticeGenerateResult?: GeneratePracticeQuestionResult;
+  lastPracticeGradeResult?: GradePracticeAnswerResult;
+  practiceQuestionForGrade = "";
+  practiceAnswerForGrade = "";
 
   build(): IngestDocument {
     return new IngestDocument(this.parser, this.embeddings, this.chunks, new FixedClock(), this.ids);
@@ -147,7 +165,10 @@ export class IngestWorld extends World {
       async search(params) {
         return passages
           .filter(
-            (passage) => passage.userId === params.userId && passage.materia === params.materia,
+            (passage) =>
+              passage.userId === params.userId &&
+              passage.materia === params.materia &&
+              (params.unidad === undefined || passage.unidad === params.unidad),
           )
           .map(({ chunkId, filename, pagina, text }) => ({ chunkId, filename, pagina, text }));
       },
@@ -162,6 +183,76 @@ export class IngestWorld extends World {
       },
     };
     this.lastAskResult = await new AskQuestion(new FakeEmbeddings(), search, llm).execute(input);
+  }
+
+  async generatePractice(input: { userId: string; materia: string; unidad: string }) {
+    const passages = this.practiceSearchPassages;
+    const self = this;
+    const search: MaterialSearch = {
+      async search(params) {
+        return passages
+          .filter(
+            (passage) =>
+              passage.userId === params.userId &&
+              passage.materia === params.materia &&
+              (params.unidad === undefined || passage.unidad === params.unidad),
+          )
+          .map(({ chunkId, filename, pagina, text }) => ({ chunkId, filename, pagina, text }));
+      },
+    };
+    const llm: PracticeLlmProvider = {
+      async generatePracticeQuestion() {
+        self.practiceGenerateCalls += 1;
+        return { question: self.practiceGeneratedQuestion };
+      },
+      async gradePracticeAnswer() {
+        self.practiceGradeCalls += 1;
+        return { verdict: self.practiceVerdict };
+      },
+    };
+    this.lastPracticeGenerateResult = await new GeneratePracticeQuestion(
+      new FakeEmbeddings(),
+      search,
+      llm,
+    ).execute(input);
+  }
+
+  async gradePractice(input: {
+    userId: string;
+    materia: string;
+    unidad: string;
+    question: string;
+    answer: string;
+  }) {
+    const passages = this.practiceSearchPassages;
+    const self = this;
+    const search: MaterialSearch = {
+      async search(params) {
+        return passages
+          .filter(
+            (passage) =>
+              passage.userId === params.userId &&
+              passage.materia === params.materia &&
+              (params.unidad === undefined || passage.unidad === params.unidad),
+          )
+          .map(({ chunkId, filename, pagina, text }) => ({ chunkId, filename, pagina, text }));
+      },
+    };
+    const llm: PracticeLlmProvider = {
+      async generatePracticeQuestion() {
+        self.practiceGenerateCalls += 1;
+        return { question: self.practiceGeneratedQuestion };
+      },
+      async gradePracticeAnswer() {
+        self.practiceGradeCalls += 1;
+        return { verdict: self.practiceVerdict };
+      },
+    };
+    this.lastPracticeGradeResult = await new GradePracticeAnswer(
+      new FakeEmbeddings(),
+      search,
+      llm,
+    ).execute(input);
   }
 
   async readStream(stream: AsyncIterable<string>): Promise<string> {

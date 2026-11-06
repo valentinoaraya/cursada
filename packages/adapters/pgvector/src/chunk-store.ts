@@ -112,6 +112,10 @@ export class PgVectorChunkStore implements ChunkStore {
     }
 
     const embeddingVector = `[${input.questionEmbedding.join(",")}]`;
+    const unidad = input.unidad?.trim();
+    // When `unidad` is omitted (e.g. AskQuestion), omit the clause. Using `($3 IS NULL OR ...)`
+    // with a bound NULL makes Postgres error: "could not determine data type of parameter".
+    const unidadClause = unidad ? this.client`AND c.unidad = ${unidad}` : this.client``;
     const rows = await this.client<
       {
         id: string;
@@ -129,6 +133,7 @@ export class PgVectorChunkStore implements ChunkStore {
       INNER JOIN documents d ON d.document_id = c.document_id
       WHERE c.user_id = ${input.userId}
         AND c.materia = ${input.materia}
+        ${unidadClause}
       ORDER BY (
         COALESCE(ts_rank(c.search_tsv, plainto_tsquery('spanish', ${input.question})), 0)
         + (1 - (c.embedding <=> ${embeddingVector}::vector))

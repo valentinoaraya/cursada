@@ -20,8 +20,19 @@ export const ingestResultSchema = z.object({
   chunkCount: z.number().int().nonnegative(),
 });
 
+export const practiceQuestionSchema = z.object({
+  question: z.string().min(1),
+});
+
+export const practiceGradeSchema = z.object({
+  verdict: z.enum(["Está bien", "Fallaste"]),
+  citations: z.array(citationSchema),
+});
+
 export type Citation = z.infer<typeof citationSchema>;
 export type Abstain = z.infer<typeof abstainSchema>;
 export type Answer = z.infer<typeof answerSchema>;
 export type IngestResultView = z.infer<typeof ingestResultSchema>;
+export type PracticeQuestionView = z.infer<typeof practiceQuestionSchema>;
+export type PracticeGradeView = z.infer<typeof practiceGradeSchema>;
 

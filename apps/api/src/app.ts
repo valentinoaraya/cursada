@@ -1,4 +1,13 @@
-import type { AskQuestionInput, AskQuestionResult, IngestDocumentInput, IngestResult } from "@cursada/core";
+import type {
+  AskQuestionInput,
+  AskQuestionResult,
+  GeneratePracticeQuestionInput,
+  GeneratePracticeQuestionResult,
+  GradePracticeAnswerInput,
+  GradePracticeAnswerResult,
+  IngestDocumentInput,
+  IngestResult,
+} from "@cursada/core";
 import multipart from "@fastify/multipart";
 import Fastify, { type FastifyInstance } from "fastify";
 
@@ -10,12 +19,22 @@ export type QuestionAsk = {
   execute(input: AskQuestionInput): Promise<AskQuestionResult>;
 };
 
+export type PracticeGenerate = {
+  execute(input: GeneratePracticeQuestionInput): Promise<GeneratePracticeQuestionResult>;
+};
+
+export type PracticeGrade = {
+  execute(input: GradePracticeAnswerInput): Promise<GradePracticeAnswerResult>;
+};
+
 const localUserId = "local";
 
 export function buildApp(options?: {
   logger?: boolean;
   ingest?: DocumentIngest;
   ask?: QuestionAsk;
+  practiceGenerate?: PracticeGenerate;
+  practiceGrade?: PracticeGrade;
 }): FastifyInstance {
   const app = Fastify({ logger: options?.logger ?? true });
 
@@ -74,6 +93,71 @@ export function buildApp(options?: {
         }
         reply.raw.end();
         return reply;
+      },
+    );
+  }
+
+  if (options?.practiceGenerate) {
+    const practiceGenerate = options.practiceGenerate;
+    app.post<{ Body: { materia?: string; unidad?: string } }>(
+      "/practice/generate",
+      async (request, reply) => {
+        const materia = request.body?.materia ?? "";
+        const unidad = request.body?.unidad ?? "";
+        if (materia.trim() === "" || unidad.trim() === "") {
+          return reply.code(400).send({ message: "faltan materia o unidad" });
+        }
+
+        const result = await practiceGenerate.execute({
+          userId: localUserId,
+          materia: materia.trim(),
+          unidad: unidad.trim(),
+        });
+        if (result.kind === "abstain") {
+          return { notice: result.notice };
+        }
+        return { question: result.question };
+      },
+    );
+  }
+
+  if (options?.practiceGrade) {
+    const practiceGrade = options.practiceGrade;
+    app.post<{ Body: { materia?: string; unidad?: string; question?: string; answer?: string } }>(
+      "/practice/grade",
+      async (request, reply) => {
+        const materia = request.body?.materia ?? "";
+        const unidad = request.body?.unidad ?? "";
+        const question = request.body?.question ?? "";
+        const answer = request.body?.answer ?? "";
+        if (
+          materia.trim() === "" ||
+          unidad.trim() === "" ||
+          question.trim() === "" ||
+          answer.trim() === ""
+        ) {
+          return reply.code(400).send({ message: "faltan materia, unidad, pregunta o respuesta" });
+        }
+
+        try {
+          const result = await practiceGrade.execute({
+            userId: localUserId,
+            materia: materia.trim(),
+            unidad: unidad.trim(),
+            question: question.trim(),
+            answer: answer.trim(),
+          });
+          if (result.kind === "abstain") {
+            return { notice: result.notice };
+          }
+          return {
+            verdict: result.verdict,
+            citations: result.citations,
+          };
+        } catch (error) {
+          const message = error instanceof Error ? error.message : "falló la corrección";
+          return reply.code(502).send({ message });
+        }
       },
     );
   }

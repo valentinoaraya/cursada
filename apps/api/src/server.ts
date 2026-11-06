@@ -6,7 +6,12 @@ const host = "0.0.0.0";
 
 try {
   const api = await createApiUseCases(process.env.DATABASE_URL ?? "");
-  const app = buildApp({ ingest: api.ingest, ask: api.ask });
+  const app = buildApp({
+    ingest: api.ingest,
+    ask: api.ask,
+    practiceGenerate: api.generatePracticeQuestion,
+    practiceGrade: api.gradePracticeAnswer,
+  });
   await app.listen({ port, host });
 } catch (error) {
   console.error(error);
