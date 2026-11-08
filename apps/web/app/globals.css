@@ -35,34 +35,132 @@ h3 {
   color: var(--violet);
 }
 
-main {
-  position: relative;
-  width: min(720px, calc(100% - 2rem));
-  margin: 0 auto;
-  padding: 4rem 0 5rem;
+.shell {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr) 340px;
+  height: 100vh;
+  min-height: 100vh;
+}
+
+.sidebar,
+.practice {
+  min-height: 0;
+  overflow: auto;
+  padding: 1.25rem 1rem 2rem;
+  background: #ffffff;
+}
+
+.sidebar {
+  border-right: 1px solid var(--line);
+}
+
+.practice {
+  border-left: 1px solid var(--line);
 }
 
 .brand {
-  margin: 0 0 0.35rem;
+  margin: 0 0 1.25rem;
   font-family: var(--font-sans), "Plus Jakarta Sans", sans-serif;
-  font-size: clamp(2.8rem, 8vw, 4.4rem);
+  font-size: 1.6rem;
   font-weight: 700;
   letter-spacing: -0.04em;
-  line-height: 0.95;
+  line-height: 1;
   color: var(--violet);
 }
 
-.tagline {
-  margin: 0 0 2.5rem;
-  max-width: 34rem;
-  color: rgba(20, 18, 24, 0.78);
-  font-size: 1.05rem;
-  line-height: 1.5;
+.pane-title {
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-.workspace {
+.materia-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
   display: grid;
-  gap: 1.25rem;
+  gap: 0.35rem;
+}
+
+.materia-add,
+.upload {
+  margin-top: 1.25rem;
+}
+
+.chat {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 1.25rem 1.25rem 1rem;
+}
+
+.chat-header {
+  flex: none;
+}
+
+.chat-header .lede {
+  margin-bottom: 0.75rem;
+}
+
+.chat-log {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.25rem 0 1rem;
+}
+
+.chat-empty {
+  margin: auto 0;
+  color: rgba(20, 18, 24, 0.62);
+  line-height: 1.45;
+}
+
+.bubble {
+  padding: 0.9rem 1rem;
+  border-radius: 1rem;
+  background: var(--accent-soft);
+}
+
+.bubble-user {
+  align-self: flex-end;
+  max-width: min(36rem, 100%);
+  background: #ffffff;
+  border: 1px solid var(--line);
+}
+
+.composer {
+  flex: none;
+  display: grid;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line);
+}
+
+.composer textarea {
+  min-height: 4.5rem;
+}
+
+@media (max-width: 980px) {
+  .shell {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .sidebar,
+  .practice {
+    border: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .chat {
+    min-height: 70vh;
+  }
 }
 
 .panel {
@@ -159,6 +257,28 @@ button:hover:not(:disabled) {
 button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
+}
+
+button.materia-item {
+  width: 100%;
+  justify-self: stretch;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  background: transparent;
+  color: var(--ink);
+  font-weight: 600;
+  text-align: left;
+}
+
+button.materia-item:hover:not(:disabled) {
+  transform: none;
+  background: var(--accent-soft);
+}
+
+button.materia-item.is-active {
+  background: var(--accent-soft);
+  color: var(--violet);
 }
 
 .notice,
