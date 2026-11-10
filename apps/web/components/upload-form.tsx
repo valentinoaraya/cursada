@@ -6,12 +6,11 @@ import { uploadDocument } from "../lib/upload-client";
 
 type UploadFormProps = {
   materia: string;
-  onMateriaChange: (materia: string) => void;
   unidad: string;
   onUnidadChange: (unidad: string) => void;
 };
 
-export function UploadForm({ materia, onMateriaChange, unidad, onUnidadChange }: UploadFormProps) {
+export function UploadForm({ materia, unidad, onUnidadChange }: UploadFormProps) {
   const [file, setFile] = useState<File | null>(null);
   const [result, setResult] = useState<IngestResultView | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -41,26 +40,13 @@ export function UploadForm({ materia, onMateriaChange, unidad, onUnidadChange }:
   }
 
   return (
-    <section className="panel" aria-labelledby="upload-title">
-      <h2 id="upload-title">Cargá material</h2>
-      <p className="lede">
-        Subí un PDF o un Markdown asociado a una materia y una unidad. Si ya estaba indexado, no se
-        vuelve a procesar.
-      </p>
+    <section className="upload" aria-labelledby="upload-title">
+      <h2 id="upload-title" className="pane-title">
+        Material
+      </h2>
+      <p className="lede">Se carga en {materia}.</p>
 
       <form onSubmit={onSubmit} className="stack-form">
-        <label className="field">
-          <span>Materia</span>
-          <input
-            name="materia"
-            value={materia}
-            onChange={(event) => onMateriaChange(event.target.value)}
-            required
-            disabled={pending}
-            autoComplete="off"
-          />
-        </label>
-
         <label className="field">
           <span>Unidad</span>
           <input
@@ -85,7 +71,7 @@ export function UploadForm({ materia, onMateriaChange, unidad, onUnidadChange }:
           />
         </label>
 
-        <button type="submit" disabled={pending || !file || materia.trim() === "" || unidad.trim() === ""}>
+        <button type="submit" className="btn-secondary" disabled={pending || !file || materia.trim() === "" || unidad.trim() === ""}>
           {pending ? "Indexando…" : "Cargar"}
         </button>
       </form>

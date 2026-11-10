@@ -5,15 +5,16 @@ import { generatePracticeQuestion, gradePracticeAnswer, type PracticeGradeView }
 
 type PracticeFormProps = {
   materia: string;
-  onMateriaChange: (materia: string) => void;
   unidad: string;
   onUnidadChange: (unidad: string) => void;
 };
 
-export function PracticeForm({ materia, onMateriaChange, unidad, onUnidadChange }: PracticeFormProps) {
+export function PracticeForm({ materia, unidad, onUnidadChange }: PracticeFormProps) {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
-  const [generateResult, setGenerateResult] = useState<{ kind: "abstain"; notice: string } | { kind: "question"; text: string } | null>(null);
+  const [generateResult, setGenerateResult] = useState<
+    { kind: "abstain"; notice: string } | { kind: "question"; text: string } | null
+  >(null);
   const [gradeResult, setGradeResult] = useState<PracticeGradeView | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pendingGenerate, setPendingGenerate] = useState(false);
@@ -68,26 +69,13 @@ export function PracticeForm({ materia, onMateriaChange, unidad, onUnidadChange 
   const canGrade = question.trim() !== "" && answer.trim() !== "";
 
   return (
-    <section className="panel" aria-labelledby="practice-title">
-      <h2 id="practice-title">Practicá por unidad</h2>
-      <p className="lede">
-        Pedí una pregunta de examen armada con el material de la unidad que elegiste. Después escribí tu respuesta y
-        corregí contra la fuente.
-      </p>
+    <section className="practice" aria-labelledby="practice-title">
+      <h2 id="practice-title" className="pane-title">
+        Práctica
+      </h2>
+      <p className="lede">Una pregunta de la unidad, y la corrección contra la fuente.</p>
 
       <form onSubmit={onGenerate} className="stack-form">
-        <label className="field">
-          <span>Materia</span>
-          <input
-            name="materia"
-            value={materia}
-            onChange={(event) => onMateriaChange(event.target.value)}
-            required
-            disabled={pendingGenerate || pendingGrade}
-            autoComplete="off"
-          />
-        </label>
-
         <label className="field">
           <span>Unidad</span>
           <input
@@ -102,6 +90,7 @@ export function PracticeForm({ materia, onMateriaChange, unidad, onUnidadChange 
 
         <button
           type="submit"
+          className="btn-secondary"
           disabled={pendingGenerate || pendingGrade || materia.trim() === "" || unidad.trim() === ""}
         >
           {pendingGenerate ? "Generando…" : "Generar pregunta"}
@@ -160,7 +149,8 @@ export function PracticeForm({ materia, onMateriaChange, unidad, onUnidadChange 
             <ul className="citations">
               {gradeResult.citations.map((citation) => (
                 <li key={`${citation.filename}-${citation.pagina}`}>
-                  {citation.filename}, p. {citation.pagina}
+                  <span className="cite-file">{citation.filename}</span>
+                  <span className="cite-page">p. {citation.pagina}</span>
                 </li>
               ))}
             </ul>
