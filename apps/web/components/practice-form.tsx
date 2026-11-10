@@ -90,6 +90,7 @@ export function PracticeForm({ materia, unidad, onUnidadChange }: PracticeFormPr
 
         <button
           type="submit"
+          className="btn-secondary"
           disabled={pendingGenerate || pendingGrade || materia.trim() === "" || unidad.trim() === ""}
         >
           {pendingGenerate ? "Generando…" : "Generar pregunta"}
@@ -148,7 +149,8 @@ export function PracticeForm({ materia, unidad, onUnidadChange }: PracticeFormPr
             <ul className="citations">
               {gradeResult.citations.map((citation) => (
                 <li key={`${citation.filename}-${citation.pagina}`}>
-                  {citation.filename}, p. {citation.pagina}
+                  <span className="cite-file">{citation.filename}</span>
+                  <span className="cite-page">p. {citation.pagina}</span>
                 </li>
               ))}
             </ul>

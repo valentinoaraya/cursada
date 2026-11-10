@@ -73,7 +73,8 @@ export function AskForm({ materia }: AskFormProps) {
               <ul className="citations">
                 {message.citations.map((citation) => (
                   <li key={`${citation.filename}-${citation.pagina}`}>
-                    {citation.filename}, p. {citation.pagina}
+                    <span className="cite-file">{citation.filename}</span>
+                    <span className="cite-page">p. {citation.pagina}</span>
                   </li>
                 ))}
               </ul>
@@ -95,21 +96,25 @@ export function AskForm({ materia }: AskFormProps) {
       ) : null}
 
       <form onSubmit={onSubmit} className="composer">
-        <label className="field">
-          <span>Pregunta</span>
-          <textarea
-            name="question"
-            value={question}
-            onChange={(event) => setQuestion(event.target.value)}
-            required
-            rows={3}
-            disabled={pending}
-            placeholder="¿Qué es un sistema?"
-          />
-        </label>
-        <button type="submit" disabled={pending || question.trim() === "" || materia.trim() === ""}>
-          {pending ? "Buscando…" : "Preguntar"}
-        </button>
+        <div className="composer-box">
+          <label className="field">
+            <span className="sr-only">Pregunta</span>
+            <textarea
+              name="question"
+              value={question}
+              onChange={(event) => setQuestion(event.target.value)}
+              required
+              rows={2}
+              disabled={pending}
+              placeholder="¿Qué es un sistema?"
+            />
+          </label>
+          <div className="composer-actions">
+            <button type="submit" disabled={pending || question.trim() === "" || materia.trim() === ""}>
+              {pending ? "Buscando…" : "Preguntar"}
+            </button>
+          </div>
+        </div>
       </form>
     </section>
   );

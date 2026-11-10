@@ -71,7 +71,7 @@ export function UploadForm({ materia, unidad, onUnidadChange }: UploadFormProps)
           />
         </label>
 
-        <button type="submit" disabled={pending || !file || materia.trim() === "" || unidad.trim() === ""}>
+        <button type="submit" className="btn-secondary" disabled={pending || !file || materia.trim() === "" || unidad.trim() === ""}>
           {pending ? "Indexando…" : "Cargar"}
         </button>
       </form>
