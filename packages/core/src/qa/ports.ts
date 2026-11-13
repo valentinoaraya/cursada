@@ -20,6 +20,29 @@ export interface LlmProvider {
 	}>;
 }
 
+export type FailedPracticeQuestion = {
+	question: string;
+	unidad: string;
+};
+
+export type SaveFailedPracticeInput = {
+	userId: string;
+	materia: string;
+	unidad: string;
+	question: string;
+};
+
+export type ListFailedPracticeInput = {
+	userId: string;
+	materia: string;
+};
+
+export interface FailedPracticeStore {
+	save(input: SaveFailedPracticeInput): Promise<void>;
+	/** Must filter by `userId` and `materia` in the store. Callers do not trim the result. */
+	list(input: ListFailedPracticeInput): Promise<FailedPracticeQuestion[]>;
+}
+
 export interface PracticeLlmProvider {
 	generatePracticeQuestion(input: {
 		passages: RetrievedPassage[];

@@ -1,12 +1,20 @@
 import { setWorldConstructor, World } from "@cucumber/cucumber";
-import { AskQuestion, GeneratePracticeQuestion, GradePracticeAnswer, IngestDocument } from "@cursada/core";
+import {
+  AskQuestion,
+  GeneratePracticeQuestion,
+  GradePracticeAnswer,
+  IngestDocument,
+  ReviewFailedPractice,
+} from "@cursada/core";
 import type {
   AskQuestionResult,
   ChunkStore,
   DocumentParser,
   EmbeddingProvider,
+  FailedPracticeStore,
   GeneratePracticeQuestionResult,
   GradePracticeAnswerResult,
+  ReviewFailedPracticeResult,
   IngestDocumentInput,
   IngestResult,
   LlmProvider,
@@ -102,6 +110,20 @@ class SequenceIds implements IdGenerator {
   }
 }
 
+export class MemoryFailedPractice implements FailedPracticeStore {
+  rows: Array<{ userId: string; materia: string; unidad: string; question: string }> = [];
+
+  async save(input: { userId: string; materia: string; unidad: string; question: string }) {
+    this.rows.push(input);
+  }
+
+  async list(input: { userId: string; materia: string }) {
+    return this.rows
+      .filter((row) => row.userId === input.userId && row.materia === input.materia)
+      .map(({ question, unidad }) => ({ question, unidad }));
+  }
+}
+
 export class IngestWorld extends World {
   input: IngestDocumentInput = {
     userId: "user-1",
@@ -131,6 +153,8 @@ export class IngestWorld extends World {
   lastPracticeGradeResult?: GradePracticeAnswerResult;
   practiceQuestionForGrade = "";
   practiceAnswerForGrade = "";
+  failedPractice = new MemoryFailedPractice();
+  lastReviewResult?: ReviewFailedPracticeResult;
 
   build(): IngestDocument {
     return new IngestDocument(this.parser, this.embeddings, this.chunks, new FixedClock(), this.ids);
@@ -252,7 +276,12 @@ export class IngestWorld extends World {
       new FakeEmbeddings(),
       search,
       llm,
+      this.failedPractice,
     ).execute(input);
+  }
+
+  async reviewFailed(input: { userId: string; materia: string }) {
+    this.lastReviewResult = await new ReviewFailedPractice(this.failedPractice).execute(input);
   }
 
   async readStream(stream: AsyncIterable<string>): Promise<string> {

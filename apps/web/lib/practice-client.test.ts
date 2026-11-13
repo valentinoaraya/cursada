@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { generatePracticeQuestion, gradePracticeAnswer } from "./practice-client.js";
+import { generatePracticeQuestion, gradePracticeAnswer, listFailedPractice } from "./practice-client.js";
 
 describe("generatePracticeQuestion", () => {
   it("posta materia y unidad al proxy", async () => {
@@ -75,5 +75,21 @@ describe("gradePracticeAnswer", () => {
         }),
       }),
     );
+  });
+});
+
+describe("listFailedPractice", () => {
+  it("pide el repaso de la materia", async () => {
+    const fetchImpl = vi.fn(async () => {
+      return new Response(
+        JSON.stringify({ questions: [{ question: "¿Qué es un sistema?", unidad: "1" }] }),
+        { status: 200 },
+      );
+    });
+
+    const result = await listFailedPractice("analisis-de-sistemas", { fetchImpl });
+
+    expect(result).toEqual([{ question: "¿Qué es un sistema?", unidad: "1" }]);
+    expect(fetchImpl).toHaveBeenCalledWith("/api/practice/review?materia=analisis-de-sistemas");
   });
 });

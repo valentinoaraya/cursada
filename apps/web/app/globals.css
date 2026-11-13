@@ -151,6 +151,33 @@ textarea {
   color: var(--ink-muted);
 }
 
+.review-title {
+  margin-top: 1.5rem;
+}
+
+.review-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.review-list li {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--paper-sunken);
+}
+
+.review-unidad {
+  color: var(--violet);
+  font-size: 12px;
+  font-weight: 550;
+}
+
 .practice .pane-title {
   padding: 0;
   font-size: 15px;

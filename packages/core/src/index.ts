@@ -1,12 +1,17 @@
 export { AskQuestion } from "./qa/ask-question.js";
 export { GradePracticeAnswer } from "./qa/grade-practice-answer.js";
 export { GeneratePracticeQuestion } from "./qa/practice-question.js";
+export { ReviewFailedPractice } from "./qa/review-failed-practice.js";
 export { IngestDocument } from "./ingestion/ingest-document.js";
 export type {
+  FailedPracticeQuestion,
+  FailedPracticeStore,
+  ListFailedPracticeInput,
   LlmProvider,
   MaterialSearch,
   MaterialSearchInput,
   PracticeLlmProvider,
+  SaveFailedPracticeInput,
 } from "./qa/ports.js";
 export type {
   AskQuestionAbstain,
@@ -19,6 +24,8 @@ export type {
   GradePracticeAnswerInput,
   GradePracticeAnswerResult,
   PracticeVerdict,
+  ReviewFailedPracticeInput,
+  ReviewFailedPracticeResult,
   RetrievedPassage,
 } from "./qa/types.js";
 export type {

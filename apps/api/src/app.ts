@@ -5,6 +5,8 @@ import type {
   GeneratePracticeQuestionResult,
   GradePracticeAnswerInput,
   GradePracticeAnswerResult,
+  ReviewFailedPracticeInput,
+  ReviewFailedPracticeResult,
   IngestDocumentInput,
   IngestResult,
 } from "@cursada/core";
@@ -27,6 +29,10 @@ export type PracticeGrade = {
   execute(input: GradePracticeAnswerInput): Promise<GradePracticeAnswerResult>;
 };
 
+export type PracticeReview = {
+  execute(input: ReviewFailedPracticeInput): Promise<ReviewFailedPracticeResult>;
+};
+
 const localUserId = "local";
 
 export function buildApp(options?: {
@@ -35,6 +41,7 @@ export function buildApp(options?: {
   ask?: QuestionAsk;
   practiceGenerate?: PracticeGenerate;
   practiceGrade?: PracticeGrade;
+  practiceReview?: PracticeReview;
 }): FastifyInstance {
   const app = Fastify({ logger: options?.logger ?? true });
 
@@ -160,6 +167,21 @@ export function buildApp(options?: {
         }
       },
     );
+  }
+
+  if (options?.practiceReview) {
+    const practiceReview = options.practiceReview;
+    app.get<{ Querystring: { materia?: string } }>("/practice/review", async (request, reply) => {
+      const materia = request.query.materia ?? "";
+      if (materia.trim() === "") {
+        return reply.code(400).send({ message: "falta materia" });
+      }
+      const result = await practiceReview.execute({
+        userId: localUserId,
+        materia: materia.trim(),
+      });
+      return { questions: result.questions };
+    });
   }
 
   return app;

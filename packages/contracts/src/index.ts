@@ -36,3 +36,14 @@ export type IngestResultView = z.infer<typeof ingestResultSchema>;
 export type PracticeQuestionView = z.infer<typeof practiceQuestionSchema>;
 export type PracticeGradeView = z.infer<typeof practiceGradeSchema>;
 
+export const failedPracticeListSchema = z.object({
+  questions: z.array(
+    z.object({
+      question: z.string().min(1),
+      unidad: z.string().min(1),
+    }),
+  ),
+});
+
+export type FailedPracticeListView = z.infer<typeof failedPracticeListSchema>;
+

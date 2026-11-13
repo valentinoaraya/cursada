@@ -69,3 +69,12 @@ export type GradePracticeAnswerGraded = {
 };
 
 export type GradePracticeAnswerResult = GradePracticeAnswerAbstain | GradePracticeAnswerGraded;
+
+export type ReviewFailedPracticeInput = {
+  userId: string;
+  materia: string;
+};
+
+export type ReviewFailedPracticeResult = {
+  questions: Array<{ question: string; unidad: string }>;
+};

@@ -327,3 +327,56 @@ describe("POST /practice/grade", () => {
     await app.close();
   });
 });
+
+describe("GET /practice/review", () => {
+  it("devuelve las preguntas falladas de la materia", async () => {
+    const calls: Array<{ userId: string; materia: string }> = [];
+    const app = buildApp({
+      logger: false,
+      practiceReview: {
+        async execute(input) {
+          calls.push(input);
+          return {
+            questions: [{ question: "¿Qué es un sistema?", unidad: "1" }],
+          };
+        },
+      },
+    });
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/practice/review?materia=analisis-de-sistemas",
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({
+      questions: [{ question: "¿Qué es un sistema?", unidad: "1" }],
+    });
+    expect(calls).toEqual([{ userId: "local", materia: "analisis-de-sistemas" }]);
+
+    await app.close();
+  });
+
+  it("sin materia responde 400", async () => {
+    let calls = 0;
+    const app = buildApp({
+      logger: false,
+      practiceReview: {
+        async execute() {
+          calls += 1;
+          return { questions: [] };
+        },
+      },
+    });
+
+    const response = await app.inject({
+      method: "GET",
+      url: "/practice/review",
+    });
+
+    expect(response.statusCode).toBe(400);
+    expect(calls).toBe(0);
+
+    await app.close();
+  });
+});

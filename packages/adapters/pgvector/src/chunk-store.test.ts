@@ -209,4 +209,41 @@ describe.skipIf(!integration)("PgVectorChunkStore", () => {
       await again.close();
     }
   });
+
+  it("lista solo las falladas de ese usuario y esa materia", async () => {
+    await store.failedPractice.save({
+      userId: "user-1",
+      materia: "analisis-de-sistemas",
+      unidad: "1",
+      question: "¿Qué es un sistema?",
+    });
+    await store.failedPractice.save({
+      userId: "user-1",
+      materia: "analisis-de-sistemas",
+      unidad: "2",
+      question: "¿Qué es un sistema?",
+    });
+    await store.failedPractice.save({
+      userId: "user-2",
+      materia: "analisis-de-sistemas",
+      unidad: "1",
+      question: "Pregunta ajena",
+    });
+    await store.failedPractice.save({
+      userId: "user-1",
+      materia: "ingenieria-de-software",
+      unidad: "1",
+      question: "¿Qué es un requisito?",
+    });
+
+    const questions = await store.failedPractice.list({
+      userId: "user-1",
+      materia: "analisis-de-sistemas",
+    });
+
+    expect(questions).toEqual([
+      { question: "¿Qué es un sistema?", unidad: "1" },
+      { question: "¿Qué es un sistema?", unidad: "2" },
+    ]);
+  });
 });
