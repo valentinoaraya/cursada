@@ -29,3 +29,7 @@ La historia se tomó como grande: tiene varias reglas y no se retoma solo con el
 L3. 2026-11-13. vamos con eso, no utilicemos pair, sigamos con ODD puro.
 
 Implementación en verde en `feat/HU-004-repasar`: dominio, `PgFailedPracticeStore`, API, web y BDD. `npm test`, `npm run test:bdd` (18 escenarios) y `npm run typecheck` pasan. El test de pgvector queda salteado sin `CURSADA_INTEGRATION=1`.
+
+L4. 2026-11-13. bien, funciona.
+
+Probado en la web: una fallada aparece en Repaso. PR [#18](https://github.com/valentinoaraya/cursada/pull/18).

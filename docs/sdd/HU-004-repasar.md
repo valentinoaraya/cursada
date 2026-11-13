@@ -67,4 +67,4 @@ Repasar devuelve la lista de preguntas guardadas de ese `userId` y esa `materia`
 | Tests | `packages/core/src/qa/grade-practice-answer.test.ts`; `…/review-failed-practice.test.ts`; API `GET /practice/review`; web `listFailedPractice` | Verde |
 | Código | `GradePracticeAnswer` guarda en `FailedPracticeStore`; `ReviewFailedPractice`; `PgFailedPracticeStore`; `GET /practice/review`; `PracticeForm` | Cubre AC-004-01 a AC-004-03 |
 | Issue | [#6](https://github.com/valentinoaraya/cursada/issues/6) | Abierta |
-| PR | | Sin abrir |
+| PR | [#18](https://github.com/valentinoaraya/cursada/pull/18) | Abierto |
