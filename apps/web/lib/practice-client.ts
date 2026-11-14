@@ -1,4 +1,10 @@
-import { abstainSchema, practiceGradeSchema, practiceQuestionSchema, type Citation } from "@cursada/contracts";
+import {
+  abstainSchema,
+  failedPracticeListSchema,
+  practiceGradeSchema,
+  practiceQuestionSchema,
+  type Citation,
+} from "@cursada/contracts";
 
 export type PracticeGenerateInput = {
   materia: string;
@@ -78,6 +84,28 @@ export async function gradePracticeAnswer(
     verdict: graded.data.verdict,
     citations: graded.data.citations,
   };
+}
+
+export type FailedPracticeItem = { question: string; unidad: string };
+
+export async function listFailedPractice(
+  materia: string,
+  options?: { fetchImpl?: typeof fetch },
+): Promise<FailedPracticeItem[]> {
+  const fetchImpl = options?.fetchImpl ?? fetch;
+  const response = await fetchImpl(`/api/practice/review?materia=${encodeURIComponent(materia)}`);
+
+  if (!response.ok) {
+    const message = await readErrorMessage(response);
+    throw new Error(message);
+  }
+
+  const body: unknown = await response.json();
+  const parsed = failedPracticeListSchema.safeParse(body);
+  if (!parsed.success) {
+    throw new Error("respuesta de repaso inesperada");
+  }
+  return parsed.data.questions;
 }
 
 async function readErrorMessage(response: Response): Promise<string> {

@@ -11,6 +11,7 @@ try {
     ask: api.ask,
     practiceGenerate: api.generatePracticeQuestion,
     practiceGrade: api.gradePracticeAnswer,
+    practiceReview: api.reviewFailedPractice,
   });
   await app.listen({ port, host });
 } catch (error) {

@@ -1,7 +1,13 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import { generatePracticeQuestion, gradePracticeAnswer, type PracticeGradeView } from "../lib/practice-client";
+import { useEffect, useState, type FormEvent } from "react";
+import {
+  generatePracticeQuestion,
+  gradePracticeAnswer,
+  listFailedPractice,
+  type FailedPracticeItem,
+  type PracticeGradeView,
+} from "../lib/practice-client";
 
 type PracticeFormProps = {
   materia: string;
@@ -19,6 +25,32 @@ export function PracticeForm({ materia, unidad, onUnidadChange }: PracticeFormPr
   const [error, setError] = useState<string | null>(null);
   const [pendingGenerate, setPendingGenerate] = useState(false);
   const [pendingGrade, setPendingGrade] = useState(false);
+  const [failedQuestions, setFailedQuestions] = useState<FailedPracticeItem[]>([]);
+  const [reviewError, setReviewError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const current = materia.trim();
+    if (current === "") {
+      setFailedQuestions([]);
+      return;
+    }
+    let cancelled = false;
+    listFailedPractice(current)
+      .then((questions) => {
+        if (!cancelled) {
+          setFailedQuestions(questions);
+          setReviewError(null);
+        }
+      })
+      .catch((caught: unknown) => {
+        if (!cancelled) {
+          setReviewError(caught instanceof Error ? caught.message : "no se pudo cargar el repaso");
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [materia]);
 
   async function onGenerate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -59,6 +91,13 @@ export function PracticeForm({ materia, unidad, onUnidadChange }: PracticeFormPr
         answer: answer.trim(),
       });
       setGradeResult(view);
+      try {
+        const questions = await listFailedPractice(materia.trim());
+        setFailedQuestions(questions);
+        setReviewError(null);
+      } catch (caught) {
+        setReviewError(caught instanceof Error ? caught.message : "no se pudo cargar el repaso");
+      }
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "no se pudo corregir");
     } finally {
@@ -157,6 +196,25 @@ export function PracticeForm({ materia, unidad, onUnidadChange }: PracticeFormPr
           ) : null}
         </article>
       ) : null}
+
+      <h3 className="pane-title review-title">Repaso</h3>
+      {reviewError ? (
+        <p className="error" role="alert">
+          {reviewError}
+        </p>
+      ) : null}
+      {failedQuestions.length === 0 ? (
+        <p className="lede">Nada para repasar en esta materia.</p>
+      ) : (
+        <ul className="review-list">
+          {failedQuestions.map((item, index) => (
+            <li key={`${item.unidad}-${item.question}-${index}`}>
+              <span className="review-unidad">Unidad {item.unidad}</span>
+              <span>{item.question}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }

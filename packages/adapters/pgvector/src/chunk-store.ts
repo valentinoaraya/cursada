@@ -1,4 +1,5 @@
 import type { ChunkStore, MaterialSearchInput, NewChunk, RetrievedPassage } from "@cursada/core";
+import { PgFailedPracticeStore } from "./failed-practice-store.js";
 import { and, eq, sql } from "drizzle-orm";
 import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import { customType, integer, pgTable, text, unique, vector } from "drizzle-orm/pg-core";
@@ -40,10 +41,14 @@ export const chunks = pgTable("chunks", {
 });
 
 export class PgVectorChunkStore implements ChunkStore {
+  readonly failedPractice: PgFailedPracticeStore;
+
   private constructor(
     private readonly db: PostgresJsDatabase,
     private readonly client: Sql,
-  ) {}
+  ) {
+    this.failedPractice = new PgFailedPracticeStore(client);
+  }
 
   static async connect(connectionString: string): Promise<PgVectorChunkStore> {
     const client = postgres(connectionString);
@@ -91,6 +96,16 @@ export class PgVectorChunkStore implements ChunkStore {
     `),
     );
     await db.execute(sql`ALTER TABLE chunks ADD COLUMN IF NOT EXISTS search_tsv tsvector`);
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS failed_practice_questions (
+        id text PRIMARY KEY,
+        user_id text NOT NULL,
+        materia text NOT NULL,
+        unidad text NOT NULL,
+        question text NOT NULL,
+        created_at timestamptz NOT NULL DEFAULT now()
+      )
+    `);
     return new PgVectorChunkStore(db, client);
   }
 

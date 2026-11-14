@@ -1,5 +1,5 @@
 import type { EmbeddingProvider } from "../ingestion/ports.js";
-import type { MaterialSearch, PracticeLlmProvider } from "./ports.js";
+import type { FailedPracticeStore, MaterialSearch, PracticeLlmProvider } from "./ports.js";
 import type { Citation, GradePracticeAnswerInput, GradePracticeAnswerResult, RetrievedPassage } from "./types.js";
 
 const abstentionNotice = "No está en tu material" as const;
@@ -9,6 +9,7 @@ export class GradePracticeAnswer {
     private readonly embeddings: EmbeddingProvider,
     private readonly search: MaterialSearch,
     private readonly llm: PracticeLlmProvider,
+    private readonly failed: FailedPracticeStore,
   ) {}
 
   async execute(input: GradePracticeAnswerInput): Promise<GradePracticeAnswerResult> {
@@ -38,11 +39,21 @@ export class GradePracticeAnswer {
       return { kind: "abstain", notice: abstentionNotice };
     }
 
+    const question = input.question.trim();
     const { verdict } = await this.llm.gradePracticeAnswer({
-      question: input.question.trim(),
+      question,
       answer: input.answer.trim(),
       passages,
     });
+
+    if (verdict === "Fallaste") {
+      await this.failed.save({
+        userId: input.userId,
+        materia: input.materia,
+        unidad: input.unidad.trim(),
+        question,
+      });
+    }
 
     return {
       kind: "graded",
